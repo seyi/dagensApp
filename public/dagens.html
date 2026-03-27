@@ -91,13 +91,10 @@
 </div>
 </div>
 <div class="flex items-center gap-4">
-<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-surface-container-high rounded-lg">
-<span class="material-symbols-outlined text-sm text-outline">search</span>
-<span class="font-label text-[10px] uppercase text-outline">Search Logs...</span>
+<div class="hidden sm:flex items-center gap-3 px-4 py-1.5 hover:bg-surface-container-high rounded-lg transition-colors cursor-pointer">
+<span class="font-label text-xs font-bold uppercase tracking-wider text-primary">Docs • Quickstart</span>
 </div>
-<button class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 text-sm font-semibold rounded-lg shadow-sm hover:opacity-90 transition-opacity font-headline">
-            Execute Command
-        </button>
+<a class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 text-sm font-semibold rounded-lg shadow-sm hover:opacity-90 transition-opacity font-headline inline-flex items-center" href="https://github.com/seyi/dagens-public#getting-started">Get Started</a>
 </div>
 </nav>
 <main class="relative">
@@ -106,34 +103,31 @@
 <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
 <div class="lg:col-span-7 z-10">
 <div class="inline-flex items-center gap-2 px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full mb-8">
-<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="font-label text-[10px] font-bold uppercase tracking-widest">v2.4 Live on Mainnet</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label text-[10px] font-bold uppercase tracking-widest">Go Runtime • HA + HITL Validated</span>
 </div>
 <h1 class="font-headline font-black text-6xl md:text-8xl text-on-background tracking-tighter leading-[0.9] mb-8">
-                    Distributed execution, <span class="text-primary">orchestrated.</span>
+                        Programmable control plane for <span class="text-primary">distributed orchestration.</span>
 </h1>
 <p class="font-body text-xl text-on-surface-variant max-w-xl mb-12 leading-relaxed">
-                    Dagens is the distributed control plane for high-density compute workloads. Verify, deploy, and scale across heterogeneous infrastructure with cryptographic certainty.
-                </p>
+                        Dagens is a programmable control-plane runtime for distributed agent and service orchestration, separating scheduling from execution with durable recovery, HA failover, and first-class human-in-the-loop pause/resume.
+                    </p>
 <div class="flex flex-col sm:flex-row gap-4">
-<button class="px-8 py-4 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-primary-container transition-all"><span class="material-symbols-outlined">code</span> View GitHub</button>
-<button class="px-8 py-4 bg-surface-container-low border border-outline-variant text-on-surface font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-surface-container-high transition-all">
-                        View Docs
-                        <span class="material-symbols-outlined">arrow_forward</span>
-</button>
+<a class="px-8 py-4 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-primary-container transition-all" href="https://github.com/seyi/dagens-public#getting-started">Get Started</a>
+<a class="px-8 py-4 bg-surface-container-low border border-outline-variant text-on-surface font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-surface-container-high transition-all" href="https://github.com/seyi/dagens-public"><span class="material-symbols-outlined">code</span> View GitHub</a>
 </div>
-<div class="mt-16 grid grid-cols-3 gap-8 border-t border-outline-variant/30 pt-8">
+<div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-outline-variant/30 pt-8">
 <div>
-<div class="font-label text-[10px] uppercase text-outline tracking-widest mb-1">Latency</div>
-<div class="font-headline font-bold text-2xl text-on-background">0.42ms</div>
+<div class="font-label text-[10px] uppercase text-outline tracking-widest mb-1">Reliability</div>
+<div class="font-headline font-bold text-lg text-on-background leading-snug">Durable scheduler replay and recovery</div>
 </div>
 <div>
-<div class="font-label text-[10px] uppercase text-outline tracking-widest mb-1">Nodes</div>
-<div class="font-headline font-bold text-2xl text-on-background">14.2k</div>
+<div class="font-label text-[10px] uppercase text-outline tracking-widest mb-1">Resilience</div>
+<div class="font-headline font-bold text-lg text-on-background leading-snug">HA failover and recovery drills</div>
 </div>
 <div>
-<div class="font-label text-[10px] uppercase text-outline tracking-widest mb-1">Trust</div>
-<div class="font-headline font-bold text-2xl text-on-background">99.9%</div>
+<div class="font-label text-[10px] uppercase text-outline tracking-widest mb-1">Precision</div>
+<div class="font-headline font-bold text-lg text-on-background leading-snug">First-class HITL checkpoint/resume</div>
 </div>
 </div>
 </div>
@@ -145,15 +139,15 @@
 <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
 <div class="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
 </div>
-<span class="font-label text-[10px] text-white/40 uppercase ml-4 tracking-widest">dagens-executor — bash</span>
+<span class="font-label text-[10px] text-white/40 uppercase ml-4 tracking-widest">quickstart — local cluster</span>
 </div>
 <div class="p-6 font-label text-sm text-blue-400 space-y-2 overflow-hidden">
-<div class="flex gap-3"><span class="text-white/20">01</span><span>$ dagens init --cluster-id ledger-prod-01</span></div>
-<div class="flex gap-3"><span class="text-white/20">02</span><span class="text-white">Analyzing network topology...</span></div>
-<div class="flex gap-3"><span class="text-white/20">03</span><span class="text-green-400">Found 12 available edge nodes.</span></div>
-<div class="flex gap-3"><span class="text-white/20">04</span><span>$ dagens deploy ./worker.wasm</span></div>
-<div class="flex gap-3"><span class="text-white/20">05</span><span class="text-white">Propagating execution graph...</span></div>
-<div class="flex gap-3"><span class="text-white/20">06</span><span class="text-primary-fixed">SUCCESS: Execution ledger updated.</span></div>
+<div class="flex gap-3"><span class="text-white/20">01</span><span>$ docker compose up --build</span></div>
+<div class="flex gap-3"><span class="text-white/20">02</span><span class="text-white">Starting api-server, workers, postgres, jaeger...</span></div>
+<div class="flex gap-3"><span class="text-white/20">03</span><span>$ curl http://localhost:8080/health</span></div>
+<div class="flex gap-3"><span class="text-white/20">04</span><span class="text-green-400">{"status":"healthy"}</span></div>
+<div class="flex gap-3"><span class="text-white/20">05</span><span>$ go test ./pkg/scheduler -count=1</span></div>
+<div class="flex gap-3"><span class="text-white/20">06</span><span class="text-primary">ok github.com/seyi/dagens/pkg/scheduler</span></div>
 <div class="flex gap-3"><span class="text-white/20">07</span><span class="animate-pulse">_</span></div>
 </div>
 </div>
@@ -168,52 +162,52 @@
 <div class="max-w-7xl mx-auto">
 <div class="mb-16">
 <span class="font-label text-xs font-bold uppercase tracking-[0.3em] text-primary block mb-4">Core Capabilities</span>
-<h2 class="font-headline font-bold text-4xl text-on-background max-w-2xl">The engine for high-reliability distributed systems.</h2>
+<h2 class="font-headline font-bold text-4xl text-on-background max-w-2xl">What Dagens Provides</h2>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-<!-- Large Feature Card: AI Agent Orchestration at Scale -->
+<!-- Distributed Control Plane -->
 <div class="md:col-span-8 bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col md:flex-row shadow-sm border border-outline-variant/20 group">
 <div class="p-10 flex-1 flex flex-col justify-between">
 <div>
 <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-500">
-<span class="material-symbols-outlined">smart_toy</span>
+<span class="material-symbols-outlined">settings_input_component</span>
 </div>
-<h3 class="font-headline font-extrabold text-3xl mb-4">AI Agent Orchestration at Scale</h3>
-<p class="text-on-surface-variant leading-relaxed">The control plane for high-density, AI-driven workloads. Automate agent lifecycle management, context propagation, and state synchronization across global clusters.</p>
+<h3 class="font-headline font-extrabold text-3xl mb-4">Distributed Control Plane</h3>
+<p class="text-on-surface-variant leading-relaxed">Centralized management for durable recovery and lifecycle state. Dagens ensures every workflow transition is recorded and recoverable across your entire cluster.</p>
 </div>
 <div class="pt-8">
-<a class="font-label text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-2" href="#">Explore Agent SDK <span class="material-symbols-outlined text-sm">open_in_new</span></a>
+<a class="font-label text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-2" href="#">Architecture Overview <span class="material-symbols-outlined text-sm">open_in_new</span></a>
 </div>
 </div>
 <div class="md:w-1/3 h-64 md:h-auto overflow-hidden relative grayscale group-hover:grayscale-0 transition-all duration-700">
 <img class="w-full h-full object-cover" data-alt="close-up of server farm blinking blue and white lights in a futuristic data center with high tech aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9S48SAFGARNQq8HmDWezZDs8NFqcUFDBrTMSRqnGpX7wXbGWgeMvHeyHxlZ2YUQM6go46gXeo0kSzKQIElpn-fo-TGOK4mkRs0QlHz8LZmw-RbhDZFdh3AzCpHqzY3Prin8hlb5UCTEdQj9tmQj-9z5B__AqhsUtK3MTFhdeW6EwKtYHr34NiuWLAQjXyi0BbH7-Nn3VWtp9s8HDKb9Aabt_FOfub45HGYqSINH-kjJ4bXNdSRVbUyYYf_u_tSmaxO6T0WN6zIWI6"/>
 </div>
 </div>
-<!-- Small Feature Card 1: Large-Scale Cluster Operability -->
+<!-- Worker Fabric -->
 <div class="md:col-span-4 bg-primary text-white rounded-xl p-10 flex flex-col justify-between shadow-xl">
 <div class="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-6">
-<span class="material-symbols-outlined text-white">grid_view</span>
+<span class="material-symbols-outlined text-white">account_tree</span>
 </div>
 <div>
-<h3 class="font-headline font-bold text-2xl mb-4">Large-Scale Cluster Operability</h3>
-<p class="text-primary-fixed opacity-80 text-sm leading-relaxed">Seamless management of thousands of nodes across heterogeneous infrastructure. Unified control for hybrid cloud, edge, and bare metal fleets.</p>
+<h3 class="font-headline font-bold text-2xl mb-4">Worker Fabric and Horizontal Execution</h3>
+<p class="text-primary-fixed opacity-80 text-sm leading-relaxed">Capacity-aware dispatch across workers lets execution scale horizontally while the control plane remains the durable source of truth for workflow progress.</p>
 </div>
 </div>
-<!-- Small Feature Card 2: Leader Elections -->
+<!-- HA Failover -->
 <div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-10 border border-outline-variant/20 flex flex-col justify-between shadow-sm hover:border-primary/50 transition-colors">
 <div class="w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center mb-6">
-<span class="material-symbols-outlined text-primary">how_to_reg</span>
+<span class="material-symbols-outlined text-primary">security</span>
 </div>
 <div>
-<h3 class="font-headline font-bold text-2xl mb-4">Leader Elections</h3>
-<p class="text-on-surface-variant text-sm leading-relaxed">Robust, distributed consensus for high-availability coordination. Ensure fault-tolerant state management with minimal overhead and sub-millisecond failover.</p>
+<h3 class="font-headline font-bold text-2xl mb-4">HA Failover and Dispatch Fencing</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Leadership-gated dispatch and durable transition history reduce duplicate execution risk during failover and recovery.</p>
 </div>
 </div>
-<!-- Medium Feature Card: Human-in-the-Loop -->
+<!-- Human-in-the-Loop -->
 <div class="md:col-span-8 bg-surface-container-highest rounded-xl overflow-hidden flex items-center border border-outline-variant/10 shadow-sm relative group">
 <div class="flex-1 z-10 py-10 pl-6 md:pl-10 pr-4 md:pr-0">
 <h3 class="font-headline font-bold text-2xl mb-2">Human-in-the-Loop</h3>
-<p class="text-on-surface-variant text-sm max-w-[50%] leading-relaxed">Integrated manual intervention for critical decision points in automated workflows. Pause execution, verify results, and resume with granular permission controls.</p>
+<p class="text-on-surface-variant text-sm max-w-[50%] leading-relaxed">Pause execution at critical points, collect human input through callbacks, and resume with durable checkpoint and recovery semantics.</p>
 </div>
 <div class="absolute right-0 top-0 bottom-0 w-1/2 opacity-20 pointer-events-none transition-opacity group-hover:opacity-40">
 <img class="w-full h-full object-cover" data-alt="abstract digital connection lines and dots forming a complex crystalline structure with glowing cyan light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKHwdJH9irMRYtfO2u3eQgGYZuIQCRu0goeGuvMM_-Gks06hzfQrqk06s5tTVE9BCix5-zU61OZjL0oXThUT92a_YFsOB7aisrHmPtAR2Ei-h88XlF3CLbp-pJU8Zxxf5MtjWTg8nV0trC8tyzNNOypQGl0ZQQBSELAOcZU1rJb-CwrGOPduGh2QHD9-nCVpINFO43UKzWEfCf9zGRG8waTT_TNGeDbBT4KK4DswkXBjZcrertEUIqdiMbGeQWZUU_PtaX5jmj0zaM"/>
@@ -222,13 +216,13 @@
 </div>
 </div>
 </section>
-<!-- Native AI Framework Integrations Section -->
+<!-- Integrations Section -->
 <section class="py-24 px-6 lg:px-12 bg-white">
 <div class="max-w-7xl mx-auto">
 <div class="mb-16">
-<span class="font-label text-xs font-bold uppercase tracking-[0.3em] text-primary block mb-4">Native AI Framework Integrations</span>
-<h2 class="font-headline font-bold text-4xl text-on-background max-w-3xl">Seamless AI Ecosystem for Agentic Frameworks.</h2>
-<p class="mt-4 text-on-surface-variant max-w-2xl">Dagens acts as the robust execution layer for popular agentic frameworks, providing the compute density and reliability needed for production-grade AI deployments.</p>
+<span class="font-label text-xs font-bold uppercase tracking-[0.3em] text-primary block mb-4">Framework Connectivity</span>
+<h2 class="font-headline font-bold text-4xl text-on-background max-w-3xl">Integrates With Existing Agent Frameworks</h2>
+<p class="mt-4 text-on-surface-variant max-w-2xl">Dagens integrates with existing agent frameworks through adapters, moving orchestration into a distributed control plane while letting teams keep their framework choices.</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 <!-- CrewAI Integration -->
@@ -239,13 +233,13 @@
 </div>
 <div>
 <h3 class="font-headline font-extrabold text-2xl">CrewAI</h3>
-<span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Official Runtime Partner</span>
+<span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Adapter Integration</span>
 </div>
 </div>
-<p class="text-on-surface-variant leading-relaxed mb-8">Deploy your multi-agent crews with industrial-grade orchestration. Dagens manages the underlying container lifecycle and inter-agent communication protocols for high-concurrency CrewAI workloads.</p>
+<p class="text-on-surface-variant leading-relaxed mb-8">Run CrewAI-based workflows behind a dedicated control plane with durable lifecycle tracking and distributed dispatch.</p>
 <div class="flex items-center gap-4 text-xs font-label font-bold uppercase tracking-wider text-outline">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> Auto-scaling</span>
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> Mesh Comms</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> Durable Dispatch</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> Remote Orchestration</span>
 </div>
 </div>
 <!-- LangGraph Integration -->
@@ -256,54 +250,54 @@
 </div>
 <div>
 <h3 class="font-headline font-extrabold text-2xl">LangGraph</h3>
-<span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Native Execution Layer</span>
+<span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Adapter Integration</span>
 </div>
 </div>
-<p class="text-on-surface-variant leading-relaxed mb-8">Dagens provides the persistent state and execution safety required for cyclic agent graphs. Ensure your LangGraph nodes execute with sub-millisecond latency across global regions.</p>
+<p class="text-on-surface-variant leading-relaxed mb-8">Coordinate LangGraph workflows with durable lifecycle semantics and optional HITL pause/resume in the control plane.</p>
 <div class="flex items-center gap-4 text-xs font-label font-bold uppercase tracking-wider text-outline">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> State Persist</span>
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> Edge Compute</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> State Recovery</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check</span> HITL Checkpoints</span>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- Optimized for Distributed Workloads Section -->
+<!-- Architecture Section -->
 <section class="py-24 px-6 lg:px-12 bg-surface-container-low border-y border-outline-variant/10">
 <div class="max-w-7xl mx-auto">
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
 <div class="lg:col-span-5">
 <span class="font-label text-xs font-bold uppercase tracking-[0.3em] text-primary block mb-4">Infrastructure Excellence</span>
-<h2 class="font-headline font-bold text-4xl text-on-background mb-8 leading-tight">Optimized for Distributed Workloads</h2>
+<h2 class="font-headline font-bold text-4xl text-on-background mb-8 leading-tight">Architecture: Control Plane + Execution Plane</h2>
 <p class="text-on-surface-variant leading-relaxed mb-10">
-                    High-density compute tasks demand a specialized control plane. Dagens bridges the gap between heterogeneous hardware silos, creating a unified execution fabric across any environment.
-                </p>
+                            By decoupling scheduling from execution, Dagens keeps durable transition history in the control plane while workers remain execution units. This supports replay, recovery, and controlled failover when infrastructure fails.
+                        </p>
 <div class="space-y-6">
 <div class="flex items-start gap-4">
 <div class="mt-1 w-6 h-6 flex-shrink-0 bg-primary/10 rounded flex items-center justify-center">
-<span class="material-symbols-outlined text-primary text-[16px]">bolt</span>
+<span class="material-symbols-outlined text-primary text-[16px]">history</span>
 </div>
 <div>
-<h4 class="font-headline font-bold text-base mb-1">Zero-Overhead Orchestration</h4>
-<p class="text-sm text-on-surface-variant">Minimize syscall latency and memory footprint with our native WASM-runtime scheduler.</p>
+<h4 class="font-headline font-bold text-base mb-1">Durable Transition History</h4>
+<p class="text-sm text-on-surface-variant">Lifecycle state is persisted so workflows can be replayed and recovered after failure or restart.</p>
 </div>
 </div>
 <div class="flex items-start gap-4">
 <div class="mt-1 w-6 h-6 flex-shrink-0 bg-primary/10 rounded flex items-center justify-center">
-<span class="material-symbols-outlined text-primary text-[16px]">verified_user</span>
+<span class="material-symbols-outlined text-primary text-[16px]">sync_alt</span>
 </div>
 <div>
-<h4 class="font-headline font-bold text-base mb-1">Cryptographic Workload Verification</h4>
-<p class="text-sm text-on-surface-variant">Each instruction block is hashed and verified against the ledger before execution occurs.</p>
+<h4 class="font-headline font-bold text-base mb-1">State Decoupling</h4>
+<p class="text-sm text-on-surface-variant">Workers are stateless execution units; the control plane holds the source of truth for all workflow progress.</p>
 </div>
 </div>
 <div class="flex items-start gap-4">
 <div class="mt-1 w-6 h-6 flex-shrink-0 bg-primary/10 rounded flex items-center justify-center">
-<span class="material-symbols-outlined text-primary text-[16px]">timer</span>
+<span class="material-symbols-outlined text-primary text-[16px]">shield</span>
 </div>
 <div>
-<h4 class="font-headline font-bold text-base mb-1">Sub-millisecond Failover</h4>
-<p class="text-sm text-on-surface-variant">Instant state migration between nodes ensures uninterrupted service even during network partitions.</p>
+<h4 class="font-headline font-bold text-base mb-1">Leader-Gated Reliability</h4>
+<p class="text-sm text-on-surface-variant">Prevent duplicate execution with strict dispatch fencing and leader election protocols.</p>
 </div>
 </div>
 </div>
@@ -316,25 +310,21 @@
 <div class="w-2 h-2 rounded-full bg-primary/20"></div>
 <div class="w-2 h-2 rounded-full bg-primary/20"></div>
 </div>
-<span class="font-label text-[10px] uppercase text-outline tracking-widest font-bold">dagens — mesh_topology_visualizer</span>
+<span class="font-label text-[10px] uppercase text-outline tracking-widest font-bold">dagens — cluster_topology_visualizer</span>
 </div>
 <div class="p-8 grid grid-cols-3 gap-6">
-<!-- Visual representation of diverse infrastructure -->
 <div class="space-y-4">
 <div class="h-32 bg-surface-container rounded flex flex-col items-center justify-center border border-dashed border-outline-variant group hover:border-primary transition-colors">
-<span class="material-symbols-outlined text-outline group-hover:text-primary mb-2">cloud</span>
-<span class="font-label text-[10px] uppercase text-outline">Public Cloud</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary mb-2">dns</span>
+<span class="font-label text-[10px] uppercase text-outline">Worker Node A</span>
 </div>
-<div class="flex justify-center"><span class="material-symbols-outlined text-outline/30">south</span></div>
-<div class="h-12 bg-primary/5 rounded border border-primary/20 flex items-center justify-center">
-<span class="font-label text-[9px] uppercase font-bold text-primary">AWS-US-EAST-1</span>
-</div>
+<div class="flex justify-center"><span class="material-symbols-outlined text-outline/30">sync</span></div>
 </div>
 <div class="space-y-4 pt-12">
 <div class="h-32 bg-surface-container-highest rounded flex flex-col items-center justify-center border border-primary/40 relative overflow-hidden group">
 <div class="absolute inset-0 bg-primary/5 animate-pulse"></div>
 <span class="material-symbols-outlined text-primary mb-2 relative z-10">hub</span>
-<span class="font-label text-[10px] uppercase text-primary font-bold relative z-10">DAGENS CORE</span>
+<span class="font-label text-[10px] uppercase text-primary font-bold relative z-10">CONTROL PLANE</span>
 <div class="mt-2 flex gap-1 relative z-10">
 <div class="w-1 h-1 bg-green-500 rounded-full"></div>
 <div class="w-1 h-1 bg-green-500 rounded-full"></div>
@@ -345,106 +335,25 @@
 <div class="space-y-4">
 <div class="h-32 bg-surface-container rounded flex flex-col items-center justify-center border border-dashed border-outline-variant group hover:border-primary transition-colors">
 <span class="material-symbols-outlined text-outline group-hover:text-primary mb-2">dns</span>
-<span class="font-label text-[10px] uppercase text-outline">Bare Metal</span>
+<span class="font-label text-[10px] uppercase text-outline">Worker Node B</span>
 </div>
-<div class="flex justify-center"><span class="material-symbols-outlined text-outline/30">south</span></div>
-<div class="h-12 bg-primary/5 rounded border border-primary/20 flex items-center justify-center">
-<span class="font-label text-[9px] uppercase font-bold text-primary">LOCAL-CLUSTER-01</span>
-</div>
+<div class="flex justify-center"><span class="material-symbols-outlined text-outline/30">sync</span></div>
 </div>
 </div>
 <div class="bg-on-background p-6 font-label text-[11px] text-blue-300">
 <div class="flex gap-4 opacity-50 mb-2 border-b border-white/10 pb-2">
-<span class="text-white font-bold">METRICS</span>
-<span>CPU: 4.2%</span>
-<span>MEM: 128MB</span>
-<span>STATE: SYNCED</span>
+<span class="text-white font-bold">RECOVERY STATUS</span>
+<span>REPLAY: ACTIVE</span>
+<span>FAILOVER: READY</span>
+<span>QUORUM: OK</span>
 </div>
-<div class="text-green-400">$ dagens inspect --infra-health</div>
-<div class="text-white/60 mt-1">Found 4,209 Edge nodes in active quorum.</div>
-<div class="text-white/60">Cross-region verification: 100% SUCCESS.</div>
-<div class="flex items-center gap-2 mt-2">
-<div class="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-<div class="h-full w-3/4 bg-primary rounded-full"></div>
-</div>
-<span class="text-[9px] text-white/40">LOAD</span>
+<div class="text-green-400">$ dagens cluster health</div>
+<div class="text-white/60 mt-1">Control plane leader: node-01 (ACTIVE)</div>
+<div class="text-white/60">Worker 01: Dispatching task dag-99x1</div>
+<div class="text-white/60">Worker 02: Idle, ready for failover.</div>
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-</section>
-<!-- How It Works Section -->
-<section class="py-32 px-6 lg:px-12 bg-surface-container-low overflow-hidden">
-<div class="max-w-7xl mx-auto">
-<div class="text-center mb-24">
-<span class="font-label text-xs font-bold uppercase tracking-[0.4em] text-primary block mb-6">Deployment Lifecycle</span>
-<h2 class="font-headline font-black text-5xl text-on-background tracking-tight">Code to Global in 3 Hops</h2>
-</div>
-<div class="relative">
-<!-- Connector Line -->
-<div class="absolute top-1/2 left-0 w-full h-px bg-outline-variant/30 hidden lg:block -translate-y-1/2"></div>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-16 relative z-10">
-<!-- Step 1 -->
-<div class="flex flex-col items-center text-center">
-<div class="w-16 h-16 bg-white border-2 border-primary text-primary font-headline font-black text-2xl flex items-center justify-center rounded-full mb-8 shadow-lg shadow-primary/10">01</div>
-<h3 class="font-headline font-bold text-xl mb-4">Define Context</h3>
-<p class="text-on-surface-variant text-sm max-w-xs mb-8">Wrap your logic in Dagens manifests or compile directly to WASM binaries.</p>
-<div class="w-full bg-surface-container-low rounded-lg p-4 font-label text-[11px] text-left border border-outline-variant/40">
-<span class="text-on-secondary-container"># dagens.yaml</span><br/>
-<span class="text-primary">runtime:</span> wasm32-wasi<br/>
-<span class="text-primary">entrypoint:</span> main.wasm<br/>
-<span class="text-primary">resources:</span> low-latency
-                        </div>
-</div>
-<!-- Step 2 -->
-<div class="flex flex-col items-center text-center">
-<div class="w-16 h-16 bg-white border-2 border-primary text-primary font-headline font-black text-2xl flex items-center justify-center rounded-full mb-8 shadow-lg shadow-primary/10">02</div>
-<h3 class="font-headline font-bold text-xl mb-4">Ledger Verification</h3>
-<p class="text-on-surface-variant text-sm max-w-xs mb-8">The control plane validates the hash and verifies node availability across the mesh.</p>
-<div class="w-full bg-surface-container-low rounded-lg p-4 font-label text-[11px] text-left border border-outline-variant/40">
-<div class="flex items-center gap-2 mb-2">
-<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-<span class="text-green-600 font-bold uppercase">Verifying Network...</span>
-</div>
-<div class="text-on-surface/40">Checksum: 8f2a...1e9d</div>
-<div class="text-on-surface/40">Quorum: Achieved (3/3)</div>
-</div>
-</div>
-<!-- Step 3 -->
-<div class="flex flex-col items-center text-center">
-<div class="w-16 h-16 bg-primary text-white font-headline font-black text-2xl flex items-center justify-center rounded-full mb-8 shadow-lg shadow-primary/40">03</div>
-<h3 class="font-headline font-bold text-xl mb-4">Distributed Push</h3>
-<p class="text-on-surface-variant text-sm max-w-xs mb-8">Execution commences on chosen nodes. The ledger records the start of the orchestration.</p>
-<div class="w-full bg-primary text-white rounded-lg p-4 font-label text-[11px] text-left">
-<div class="font-bold mb-1">Execution ID: dag-99x1</div>
-<div class="flex justify-between">
-<span>[USA-EAST]</span>
-<span class="text-green-300">Active</span>
-</div>
-<div class="flex justify-between">
-<span>[EU-WEST]</span>
-<span class="text-green-300">Active</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Tech Stack Logo Cloud -->
-<section class="py-24 px-6 lg:px-12 bg-white border-y border-outline-variant/20">
-<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
-<div class="md:w-1/3">
-<h3 class="font-headline font-bold text-2xl mb-2">Built for Modern Infra</h3>
-<p class="text-on-surface-variant text-sm">Seamlessly integrate with your existing cloud and hardware providers.</p>
-</div>
-<div class="md:w-2/3 grid grid-cols-2 sm:grid-cols-4 gap-8 grayscale opacity-60">
-<div class="flex items-center justify-center h-12 font-headline font-black text-xl tracking-tighter">KUBERNETES</div>
-<div class="flex items-center justify-center h-12 font-headline font-black text-xl tracking-tighter">AWS</div>
-<div class="flex items-center justify-center h-12 font-headline font-black text-xl tracking-tighter">BARE METAL</div>
-<div class="flex items-center justify-center h-12 font-headline font-black text-xl tracking-tighter">WASM-EDGE</div>
 </div>
 </div>
 </section>
@@ -454,18 +363,15 @@
 <img class="w-full h-full object-cover" data-alt="deep blue abstract background with soft flowing waves and subtle noise texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw-96EPu9NAbJ4KAAAnZ97MoYTGpa3Sskb8wD000T98XV3PxjPMwni3mj8VEiVDkYOawHhAt6aGz0dUItG6y4WUbYnUbrUZAYSSOnW2CjnyXgUWtbh_4QwqD6Mu90N953jdYyEaafi8mjMXHo2e7wmyFVBOhwYgTG0dQ8QYvYC6tvBtFf0adi31-epbwtAWreeTXI5TkQq2SzsTtwDgh5kPOoZ9_VpTK05XfrbRWdNqd0-PKKRdkpVJxA4y8Rxj2iZqtuT2bDkaf5R"/>
 </div>
 <div class="max-w-4xl mx-auto text-center relative z-10">
-<h2 class="font-headline font-black text-5xl md:text-7xl text-white tracking-tighter mb-8">Start your ledger today.</h2>
+<h2 class="font-headline font-black text-5xl md:text-7xl text-white tracking-tighter mb-8">Start with a distributed control plane, not another in-process orchestrator.</h2>
 <p class="font-body text-xl text-primary-fixed-dim mb-12 max-w-2xl mx-auto">
-                Join thousands of engineers building the next generation of resilient, distributed applications on Dagens.
-            </p>
+                    Join systems teams building the next generation of resilient, distributed applications on Dagens.
+                </p>
 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-<button class="w-full sm:w-auto px-12 py-5 bg-white text-on-background font-black rounded-lg text-lg hover:bg-primary-fixed transition-all flex items-center justify-center gap-4">
-                    Launch Instance
-                    <span class="material-symbols-outlined">rocket_launch</span>
-</button>
-<a class="text-white font-label uppercase tracking-widest text-sm border-b border-white/40 pb-1 hover:border-white transition-all" href="#">Talk to an Architect</a>
+<a class="w-full sm:w-auto px-12 py-5 bg-white text-on-background font-black rounded-lg text-lg hover:bg-primary-fixed transition-all flex items-center justify-center gap-4" href="https://github.com/seyi/dagens-public#getting-started">Get Started<span class="material-symbols-outlined">rocket_launch</span></a>
+<a class="text-white font-label uppercase tracking-widest text-sm border-b border-white/40 pb-1 hover:border-white transition-all" href="mailto:seyi@aiyify.com?subject=Dagens%20Architecture%20Inquiry">Talk to an Architect</a>
 </div>
-<p class="mt-12 font-label text-[10px] uppercase tracking-[0.2em] text-white/30">Trusted by systems teams at Stripe, Cloudflare, and Vercel.</p>
+<p class="mt-12 font-label text-[10px] uppercase tracking-[0.2em] text-white/30">Built for teams moving beyond in-process orchestration.</p>
 </div>
 </section>
 </main>
@@ -478,18 +384,18 @@
 </div>
 <div class="flex flex-wrap gap-8">
 <div class="flex flex-col gap-2">
-<span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Protocol</span>
-<a class="text-xs text-on-surface-variant hover:text-primary" href="#">Specifications</a>
-<a class="text-xs text-on-surface-variant hover:text-primary" href="#">Governance</a>
+<span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Platform</span>
+<a class="text-xs text-on-surface-variant hover:text-primary" href="#">System Architecture</a>
+<a class="text-xs text-on-surface-variant hover:text-primary" href="#">Failover Guarantees</a>
 </div>
 <div class="flex flex-col gap-2">
 <span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Developers</span>
 <a class="text-xs text-on-surface-variant hover:text-primary" href="#">API Docs</a>
-<a class="text-xs text-on-surface-variant hover:text-primary" href="#">CLI Reference</a>
+<a class="text-xs text-on-surface-variant hover:text-primary" href="#">Go SDK Reference</a>
 </div>
 <div class="flex flex-col gap-2">
 <span class="font-label text-[10px] uppercase font-bold text-primary tracking-widest">Social</span>
-<a class="text-xs text-on-surface-variant hover:text-primary" href="https://github.com/seyi/dagens-public/"><span class="material-symbols-outlined text-[14px] align-middle mr-1">code</span>GitHub</a>
+<a class="text-xs text-on-surface-variant hover:text-primary" href="#"><span class="material-symbols-outlined text-[14px] align-middle mr-1">code</span>GitHub</a>
 <a class="text-xs text-on-surface-variant hover:text-primary" href="#">X / Twitter</a>
 </div>
 </div>

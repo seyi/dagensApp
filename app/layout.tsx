@@ -13,13 +13,15 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Dagens - Distributed Agent Orchestration",
-  description: "Programmable control-plane runtime for distributed agent and service orchestration. Built in Go for enterprise infrastructure.",
+  title: "Dagens - Programmable Control Plane for Distributed Orchestration",
+  description:
+    "Programmable control-plane runtime for distributed agent and service orchestration, with durable recovery, HA failover, and first-class HITL pause/resume.",
   keywords: ["distributed systems", "agent orchestration", "control plane", "Go", "microservices", "AI agents"],
   authors: [{ name: "Dagens Team" }],
   openGraph: {
-    title: "Dagens - Distributed Agent Orchestration",
-    description: "Programmable control-plane runtime for distributed agent and service orchestration",
+    title: "Dagens - Programmable Control Plane for Distributed Orchestration",
+    description:
+      "Programmable control-plane runtime for distributed agent and service orchestration, with durable recovery, HA failover, and first-class HITL pause/resume.",
     type: "website",
   },
 };
