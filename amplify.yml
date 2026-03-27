@@ -3,6 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - npm ci --cache .npm --prefer-offline
         - cp public/dagens.html public/index.html
     build:
       commands:
@@ -11,3 +12,7 @@ frontend:
     baseDirectory: public
     files:
       - '**/*'
+  cache:
+    paths:
+      - .npm/**/*
+      - node_modules/**/*
