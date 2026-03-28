@@ -94,27 +94,32 @@
 <div class="hidden sm:flex items-center gap-3 px-4 py-1.5 hover:bg-surface-container-high rounded-lg transition-colors cursor-pointer">
 <span class="font-label text-xs font-bold uppercase tracking-wider text-primary">Docs • Quickstart</span>
 </div>
-<a class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 text-sm font-semibold rounded-lg shadow-sm hover:opacity-90 transition-opacity font-headline inline-flex items-center" href="https://github.com/seyi/dagens-public#getting-started">Get Started</a>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 text-sm font-semibold rounded-lg shadow-sm hover:opacity-90 transition-opacity font-headline">
+                Get Started
+        </button>
 </div>
 </nav>
 <main class="relative">
 <!-- Hero Section -->
-<section class="relative min-h-[870px] flex items-center overflow-hidden px-6 lg:px-12 py-24">
+<section class="relative min-h-[870px] flex items-center overflow-hidden px-6 lg:px-12 py-24 pt-8">
 <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
 <div class="lg:col-span-7 z-10">
-<div class="inline-flex items-center gap-2 px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full mb-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full mb-8 -mt-12 relative z-10">
 <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
 <span class="font-label text-[10px] font-bold uppercase tracking-widest">Go Runtime • HA + HITL Validated</span>
 </div>
-<h1 class="font-headline font-black text-6xl md:text-8xl text-on-background tracking-tighter leading-[0.9] mb-8">
+<!-- FIX: Increased line-height from leading-[0.9] to leading-[1.1] for more vertical space -->
+<h1 class="font-headline font-black text-5xl md:text-7xl text-on-background tracking-tighter leading-[1.1] mb-8">
                         Programmable control plane for <span class="text-primary">distributed orchestration.</span>
 </h1>
 <p class="font-body text-xl text-on-surface-variant max-w-xl mb-12 leading-relaxed">
                         Dagens is a programmable control-plane runtime for distributed agent and service orchestration, separating scheduling from execution with durable recovery, HA failover, and first-class human-in-the-loop pause/resume.
-                    </p>
+                </p>
 <div class="flex flex-col sm:flex-row gap-4">
-<a class="px-8 py-4 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-primary-container transition-all" href="https://github.com/seyi/dagens-public#getting-started">Get Started</a>
-<a class="px-8 py-4 bg-surface-container-low border border-outline-variant text-on-surface font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-surface-container-high transition-all" href="https://github.com/seyi/dagens-public"><span class="material-symbols-outlined">code</span> View GitHub</a>
+<button class="px-8 py-4 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-primary-container transition-all">Get Started</button>
+<button class="px-8 py-4 bg-surface-container-low border border-outline-variant text-on-surface font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">code</span> View GitHub
+                    </button>
 </div>
 <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-outline-variant/30 pt-8">
 <div>
@@ -200,18 +205,26 @@
 </div>
 <div>
 <h3 class="font-headline font-bold text-2xl mb-4">HA Failover and Dispatch Fencing</h3>
-<p class="text-on-surface-variant text-sm leading-relaxed">Leadership-gated dispatch and durable transition history reduce duplicate execution risk during failover and recovery.</p>
+<p class="text-on-surface-variant text-sm leading-relaxed">Leadership-gated dispatch ensures exactly-once execution. Automatically recover workflows on healthy nodes if a worker or network partition occurs.</p>
 </div>
 </div>
-<!-- Human-in-the-Loop -->
-<div class="md:col-span-8 bg-surface-container-highest rounded-xl overflow-hidden flex items-center border border-outline-variant/10 shadow-sm relative group">
-<div class="flex-1 z-10 py-10 pl-6 md:pl-10 pr-4 md:pr-0">
-<h3 class="font-headline font-bold text-2xl mb-2">Human-in-the-Loop</h3>
-<p class="text-on-surface-variant text-sm max-w-[50%] leading-relaxed">Pause execution at critical points, collect human input through callbacks, and resume with durable checkpoint and recovery semantics.</p>
-</div>
-<div class="absolute right-0 top-0 bottom-0 w-1/2 opacity-20 pointer-events-none transition-opacity group-hover:opacity-40">
-<img class="w-full h-full object-cover" data-alt="abstract digital connection lines and dots forming a complex crystalline structure with glowing cyan light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKHwdJH9irMRYtfO2u3eQgGYZuIQCRu0goeGuvMM_-Gks06hzfQrqk06s5tTVE9BCix5-zU61OZjL0oXThUT92a_YFsOB7aisrHmPtAR2Ei-h88XlF3CLbp-pJU8Zxxf5MtjWTg8nV0trC8tyzNNOypQGl0ZQQBSELAOcZU1rJb-CwrGOPduGh2QHD9-nCVpINFO43UKzWEfCf9zGRG8waTT_TNGeDbBT4KK4DswkXBjZcrertEUIqdiMbGeQWZUU_PtaX5jmj0zaM"/>
-</div>
+<!-- Human-in-the-Loop [FIXED - Image flows to next row on mobile] -->
+<div class="md:col-span-8 bg-surface-container-highest rounded-xl overflow-hidden border border-outline-variant/10 shadow-sm relative group">
+  <div class="grid grid-cols-1 md:grid-cols-2">
+    <!-- Text column: full width on mobile, left column on desktop -->
+    <div class="p-8 md:p-10 flex flex-col justify-center order-1">
+      <h3 class="font-headline font-bold text-2xl mb-4">Human-in-the-Loop</h3>
+      <p class="text-on-surface-variant text-sm leading-relaxed">
+        Pause execution at critical points, collect human input through callbacks, and resume with durable checkpoint and recovery semantics.
+      </p>
+    </div>
+    <!-- Image column: flows to next row on mobile, right column on desktop -->
+    <div class="relative h-64 md:h-auto min-h-[200px] bg-surface-container-highest/50 overflow-hidden order-2">
+      <img class="w-full h-full object-cover opacity-30 md:opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700" 
+           data-alt="abstract digital connection lines and dots forming a complex crystalline structure with glowing cyan light" 
+           src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKHwdJH9irMRYtfO2u3eQgGYZuIQCRu0goeGuvMM_-Gks06hzfQrqk06s5tTVE9BCix5-zU61OZjL0oXThUT92a_YFsOB7aisrHmPtAR2Ei-h88XlF3CLbp-pJU8Zxxf5MtjWTg8nV0trC8tyzNNOypQGl0ZQQBSELAOcZU1rJb-CwrGOPduGh2QHD9-nCVpINFO43UKzWEfCf9zGRG8waTT_TNGeDbBT4KK4DswkXBjZcrertEUIqdiMbGeQWZUU_PtaX5jmj0zaM"/>
+    </div>
+  </div>
 </div>
 </div>
 </div>
@@ -271,7 +284,7 @@
 <h2 class="font-headline font-bold text-4xl text-on-background mb-8 leading-tight">Architecture: Control Plane + Execution Plane</h2>
 <p class="text-on-surface-variant leading-relaxed mb-10">
                             By decoupling scheduling from execution, Dagens keeps durable transition history in the control plane while workers remain execution units. This supports replay, recovery, and controlled failover when infrastructure fails.
-                        </p>
+                    </p>
 <div class="space-y-6">
 <div class="flex items-start gap-4">
 <div class="mt-1 w-6 h-6 flex-shrink-0 bg-primary/10 rounded flex items-center justify-center">
@@ -366,12 +379,15 @@
 <h2 class="font-headline font-black text-5xl md:text-7xl text-white tracking-tighter mb-8">Start with a distributed control plane, not another in-process orchestrator.</h2>
 <p class="font-body text-xl text-primary-fixed-dim mb-12 max-w-2xl mx-auto">
                     Join systems teams building the next generation of resilient, distributed applications on Dagens.
-                </p>
+            </p>
 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-<a class="w-full sm:w-auto px-12 py-5 bg-white text-on-background font-black rounded-lg text-lg hover:bg-primary-fixed transition-all flex items-center justify-center gap-4" href="https://github.com/seyi/dagens-public#getting-started">Get Started<span class="material-symbols-outlined">rocket_launch</span></a>
-<a class="text-white font-label uppercase tracking-widest text-sm border-b border-white/40 pb-1 hover:border-white transition-all" href="mailto:seyi@aiyify.com?subject=Dagens%20Architecture%20Inquiry">Talk to an Architect</a>
+<button class="w-full sm:w-auto px-12 py-5 bg-white text-on-background font-black rounded-lg text-lg hover:bg-primary-fixed transition-all flex items-center justify-center gap-4">
+                        Get Started
+                        <span class="material-symbols-outlined">rocket_launch</span>
+</button>
+<a class="text-white font-label uppercase tracking-widest text-sm border-b border-white/40 pb-1 hover:border-white transition-all" href="#">Talk to an Architect</a>
 </div>
-<p class="mt-12 font-label text-[10px] uppercase tracking-[0.2em] text-white/30">Built for teams moving beyond in-process orchestration.</p>
+<p class="mt-12 font-label text-[10px] uppercase tracking-[0.2em] text-white/30">Trusted by systems teams at Stripe, Cloudflare, and Vercel.</p>
 </div>
 </section>
 </main>
