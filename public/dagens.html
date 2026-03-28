@@ -180,17 +180,17 @@
     <span class="font-label text-xs text-white/90">Run a local distributed control plane in under 5 minutes.</span>
   </div>
 </div>
+<!-- TASK 3 (Updated): Terminal output with confirmed API contract -->
 <div class="p-6 font-label text-sm text-blue-400 space-y-2 overflow-hidden">
 <div class="flex gap-3"><span class="text-white/20">01</span><span>$ docker compose up --build</span></div>
 <div class="flex gap-3"><span class="text-white/20">02</span><span class="text-white">Starting api-server, workers, postgres, jaeger...</span></div>
 <div class="flex gap-3"><span class="text-white/20">03</span><span>$ curl http://localhost:8080/health</span></div>
 <div class="flex gap-3"><span class="text-white/20">04</span><span class="text-green-400">{"status":"healthy"}</span></div>
-<div class="flex gap-3"><span class="text-white/20">05</span><span>$ dagens job submit --workflow approval</span></div>
-<div class="flex gap-3"><span class="text-white/20">06</span><span class="text-primary">→ job dag-99x1 submitted</span></div>
-<div class="flex gap-3"><span class="text-white/20">07</span><span class="text-yellow-400">⏸ HITL pause: awaiting approval at step 2/4</span></div>
-<div class="flex gap-3"><span class="text-white/20">08</span><span>$ dagens job resume dag-99x1 --approve</span></div>
-<div class="flex gap-3"><span class="text-white/20">09</span><span class="text-green-400">✓ workflow completed successfully</span></div>
-<div class="flex gap-3"><span class="text-white/20">10</span><span class="animate-pulse">_</span></div>
+<div class="flex gap-3"><span class="text-white/20">05</span><span>$ curl -X POST http://localhost:8080/v1/jobs ...</span></div>
+<div class="flex gap-3"><span class="text-white/20">06</span><span class="text-primary">{"job_id":"&lt;job-id&gt;","status":"PENDING","submitted_at":"&lt;timestamp&gt;","message":"Job submitted successfully"}</span></div>
+<div class="flex gap-3"><span class="text-white/20">07</span><span>$ curl http://localhost:8080/v1/jobs/&lt;job-id&gt;</span></div>
+<div class="flex gap-3"><span class="text-white/20">08</span><span class="text-green-400">{"id":"&lt;job-id&gt;",...,"status":"COMPLETED"}</span></div>
+<div class="flex gap-3"><span class="text-white/20">09</span><span class="animate-pulse">_</span></div>
 </div>
 </div>
 <!-- Decorative Element -->
