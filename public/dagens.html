@@ -142,7 +142,7 @@
 <span class="material-symbols-outlined">code</span> View GitHub
                     </button>
 </div>
-<!-- TASK 2: Add Clear Reason to Star (Clickable Gold Star) - Updated Link -->
+<!-- TASK 2: Add Clear Reason to Star (Clickable Gold Star) -->
 <a href="https://github.com/seyi/dagens-public" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-2 group cursor-pointer">
   <span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform duration-200" style="font-variation-settings: 'FILL' 1; color: #fbbf24;">star</span>
   <span class="font-label text-xs text-on-surface-variant group-hover:text-primary transition-colors duration-200">Star Dagens to track HA, replay/recovery, HITL, and operator-runtime updates.</span>
@@ -173,14 +173,24 @@
 </div>
 <span class="font-label text-[10px] text-white/40 uppercase ml-4 tracking-widest">quickstart — local cluster</span>
 </div>
+<!-- TASK 3: Add outcome statement above terminal -->
+<div class="px-4 py-3 border-b border-white/10 bg-white/5">
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-[16px] text-green-400" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+    <span class="font-label text-xs text-white/90">Run a local distributed control plane in under 5 minutes.</span>
+  </div>
+</div>
 <div class="p-6 font-label text-sm text-blue-400 space-y-2 overflow-hidden">
 <div class="flex gap-3"><span class="text-white/20">01</span><span>$ docker compose up --build</span></div>
 <div class="flex gap-3"><span class="text-white/20">02</span><span class="text-white">Starting api-server, workers, postgres, jaeger...</span></div>
 <div class="flex gap-3"><span class="text-white/20">03</span><span>$ curl http://localhost:8080/health</span></div>
 <div class="flex gap-3"><span class="text-white/20">04</span><span class="text-green-400">{"status":"healthy"}</span></div>
-<div class="flex gap-3"><span class="text-white/20">05</span><span>$ go test ./pkg/scheduler -count=1</span></div>
-<div class="flex gap-3"><span class="text-white/20">06</span><span class="text-primary">ok github.com/seyi/dagens/pkg/scheduler</span></div>
-<div class="flex gap-3"><span class="text-white/20">07</span><span class="animate-pulse">_</span></div>
+<div class="flex gap-3"><span class="text-white/20">05</span><span>$ dagens job submit --workflow approval</span></div>
+<div class="flex gap-3"><span class="text-white/20">06</span><span class="text-primary">→ job dag-99x1 submitted</span></div>
+<div class="flex gap-3"><span class="text-white/20">07</span><span class="text-yellow-400">⏸ HITL pause: awaiting approval at step 2/4</span></div>
+<div class="flex gap-3"><span class="text-white/20">08</span><span>$ dagens job resume dag-99x1 --approve</span></div>
+<div class="flex gap-3"><span class="text-white/20">09</span><span class="text-green-400">✓ workflow completed successfully</span></div>
+<div class="flex gap-3"><span class="text-white/20">10</span><span class="animate-pulse">_</span></div>
 </div>
 </div>
 <!-- Decorative Element -->
