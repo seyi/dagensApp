@@ -108,13 +108,34 @@
 <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
 <span class="font-label text-[10px] font-bold uppercase tracking-widest">Go Runtime • HA + HITL Validated</span>
 </div>
-<!-- FIX: Increased line-height from leading-[0.9] to leading-[1.1] for more vertical space -->
 <h1 class="font-headline font-black text-5xl md:text-7xl text-on-background tracking-tighter leading-[1.1] mb-8">
                         Programmable control plane for <span class="text-primary">distributed orchestration.</span>
 </h1>
-<p class="font-body text-xl text-on-surface-variant max-w-xl mb-12 leading-relaxed">
+<p class="font-body text-xl text-on-surface-variant max-w-xl mb-6 leading-relaxed">
                         Dagens is a programmable control-plane runtime for distributed agent and service orchestration, separating scheduling from execution with durable recovery, HA failover, and first-class human-in-the-loop pause/resume.
                 </p>
+<!-- TASK 1: Add "Who It's For" Section - Original size, warmer colors -->
+<div class="mb-10">
+  <div class="font-label text-[10px] uppercase text-tertiary font-bold tracking-widest mb-3">Built for</div>
+  <div class="flex flex-wrap gap-2">
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-tertiary-fixed/30 rounded-lg border border-tertiary-fixed/50 hover:border-tertiary-fixed transition-all duration-300">
+      <span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+      <span class="font-label text-xs text-on-surface-variant">AI startups building agent products</span>
+    </span>
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-fixed/30 rounded-lg border border-primary-fixed/50 hover:border-primary-fixed transition-all duration-300">
+      <span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+      <span class="font-label text-xs text-on-surface-variant">Platform teams building internal copilots</span>
+    </span>
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary-fixed/40 rounded-lg border border-secondary-fixed/60 hover:border-secondary-fixed transition-all duration-300">
+      <span class="material-symbols-outlined text-[14px] text-secondary" style="font-variation-settings: 'FILL' 1;">dns</span>
+      <span class="font-label text-xs text-on-surface-variant">Infra teams needing durable multi-step execution</span>
+    </span>
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-tertiary-fixed-dim/30 rounded-lg border border-tertiary-fixed-dim/50 hover:border-tertiary-fixed-dim transition-all duration-300">
+      <span class="material-symbols-outlined text-[14px] text-tertiary" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+      <span class="font-label text-xs text-on-surface-variant">Teams outgrowing in-process orchestration</span>
+    </span>
+  </div>
+</div>
 <div class="flex flex-col sm:flex-row gap-4">
 <button class="px-8 py-4 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-primary-container transition-all">Get Started</button>
 <button class="px-8 py-4 bg-surface-container-low border border-outline-variant text-on-surface font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-surface-container-high transition-all">
@@ -208,17 +229,15 @@
 <p class="text-on-surface-variant text-sm leading-relaxed">Leadership-gated dispatch ensures exactly-once execution. Automatically recover workflows on healthy nodes if a worker or network partition occurs.</p>
 </div>
 </div>
-<!-- Human-in-the-Loop [FIXED - Image flows to next row on mobile] -->
+<!-- Human-in-the-Loop -->
 <div class="md:col-span-8 bg-surface-container-highest rounded-xl overflow-hidden border border-outline-variant/10 shadow-sm relative group">
   <div class="grid grid-cols-1 md:grid-cols-2">
-    <!-- Text column: full width on mobile, left column on desktop -->
     <div class="p-8 md:p-10 flex flex-col justify-center order-1">
       <h3 class="font-headline font-bold text-2xl mb-4">Human-in-the-Loop</h3>
       <p class="text-on-surface-variant text-sm leading-relaxed">
         Pause execution at critical points, collect human input through callbacks, and resume with durable checkpoint and recovery semantics.
       </p>
     </div>
-    <!-- Image column: flows to next row on mobile, right column on desktop -->
     <div class="relative h-64 md:h-auto min-h-[200px] bg-surface-container-highest/50 overflow-hidden order-2">
       <img class="w-full h-full object-cover opacity-30 md:opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700" 
            data-alt="abstract digital connection lines and dots forming a complex crystalline structure with glowing cyan light" 
