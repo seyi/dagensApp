@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+  <title>Dagens Live Demo</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="/js/d3.v7.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <style>
+    html { scroll-behavior: smooth; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .node-glow { filter: drop-shadow(0 0 8px rgba(173, 199, 255, 0.6)); }
+    .error-glow { filter: drop-shadow(0 0 12px rgba(255, 180, 171, 0.5)); }
+    .promoted-glow { filter: drop-shadow(0 0 14px rgba(173, 199, 255, 0.9)); }
+    .worker-active { 
+      filter: drop-shadow(0 0 10px rgba(102, 221, 139, 0.7));
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .role-pill {
+      display: inline-flex; align-items: center; padding: 0.15rem 0.45rem;
+      border-radius: 9999px; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .role-pill.control-plane {
+      color: #adc7ff; background: rgba(173, 199, 255, 0.1);
+      border: 1px solid rgba(173, 199, 255, 0.2);
+    }
+    .role-pill.execution-plane {
+      color: #66dd8b; background: rgba(102, 221, 139, 0.1);
+      border: 1px solid rgba(102, 221, 139, 0.18);
+    }
+    @keyframes pulse { 0%, 100% { r: 12; } 50% { r: 14; } }
+    @keyframes hitl-highlight {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 0, 0); }
+      50% { box-shadow: 0 0 0 4px rgba(251, 191, 0, 0.3); }
+    }
+    .hitl-highlight { animation: hitl-highlight 1.5s ease-out 3; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #10141a; }
+    ::-webkit-scrollbar-thumb { background: #31353c; border-radius: 10px; }
+    
+    .section-label {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 500;
+      color: #c1c6d7; text-decoration: none; user-select: none;
+    }
+    .section-label:hover { color: #dfe2eb; background: rgba(49, 53, 60, 0.35); }
+    .section-label.active {
+      background: linear-gradient(to right, rgba(173,199,255,0.15), transparent);
+      border-left: 3px solid #adc7ff; color: #adc7ff;
+    }
+    .section-label .material-symbols-outlined { font-size: 1.25rem; }
+    
+    .dispatch-edge {
+      stroke: #66dd8b; stroke-width: 2; stroke-dasharray: 8 4;
+      animation: flow 1s linear infinite; opacity: 0.9;
+    }
+    .baseline-edge { stroke: rgba(139, 144, 160, 0.45); stroke-width: 1.5; stroke-dasharray: 4 6; }
+    .leader-link { stroke: rgba(173, 199, 255, 0.28); stroke-width: 1.5; stroke-dasharray: 2 6; }
+    @keyframes flow { to { stroke-dashoffset: -12; } }
+    
+    /* Mobile optimizations */
+    @media (max-width: 1023px) {
+      .touch-target { min-height: 44px; min-width: 44px; touch-action: manipulation; }
+      .card-scroll { -webkit-overflow-scrolling: touch; }
+      .text-responsive { font-size: clamp(0.875rem, 4vw, 1rem); }
+      .heading-responsive { font-size: clamp(1.5rem, 8vw, 2.25rem); }
+    }
+    
+    /* Mobile bottom nav */
+    .safe-area-pb { padding-bottom: env(safe-area-inset-bottom, 0); }
+    .mobile-nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.25rem; padding: 0.5rem 0.75rem; color: #c1c6d7;
+      text-decoration: none; border-radius: 0.5rem;
+      transition: all 0.15s ease; min-width: 44px; min-height: 44px;
+      justify-content: center;
+    }
+    .mobile-nav-item:hover { color: #dfe2eb; background: rgba(49, 53, 60, 0.35); }
+    .mobile-nav-item.active { color: #adc7ff; }
+    .mobile-nav-item.active .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-tint": "#adc7ff", "primary": "#adc7ff", "on-primary-fixed-variant": "#004493",
+            "inverse-surface": "#dfe2eb", "outline-variant": "#414754", "on-tertiary-fixed-variant": "#5c4300",
+            "on-primary-fixed": "#001a41", "surface-container-low": "#181c22", "tertiary": "#fbbc00",
+            "primary-fixed": "#d8e2ff", "on-secondary": "#003919", "surface-container-highest": "#31353c",
+            "on-secondary-fixed": "#00210c", "secondary-fixed-dim": "#66dd8b", "tertiary-fixed-dim": "#fbbc00",
+            "tertiary-container": "#b88900", "surface-container-high": "#262a31", "on-tertiary-container": "#372700",
+            "inverse-on-surface": "#2d3137", "primary-container": "#4a8eff", "secondary-container": "#25a55a",
+            "on-primary-container": "#00285b", "on-secondary-container": "#003115", "surface": "#10141a",
+            "error": "#ffb4ab", "on-surface-variant": "#c1c6d7", "on-background": "#dfe2eb",
+            "tertiary-fixed": "#ffdfa0", "on-error-container": "#ffdad6", "secondary-fixed": "#83fba5",
+            "on-secondary-fixed-variant": "#005227", "on-primary": "#002e68", "primary-fixed-dim": "#adc7ff",
+            "background": "#10141a", "surface-variant": "#31353c", "surface-container": "#1c2026",
+            "outline": "#8b90a0", "on-tertiary-fixed": "#261a00", "inverse-primary": "#005bc0",
+            "surface-dim": "#10141a", "surface-container-lowest": "#0a0e14", "on-surface": "#dfe2eb",
+            "on-error": "#690005", "secondary": "#66dd8b", "surface-bright": "#353940",
+            "on-tertiary": "#402d00", "error-container": "#93000a"
+          },
+          fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"], "label": ["Space Grotesk"] },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+
+<header class="flex justify-between items-center w-full px-4 md:px-6 h-14 md:h-16 sticky top-0 z-50 bg-[#10141a] border-b border-blue-400/10">
+  <div class="flex items-center gap-3">
+    <span class="text-lg md:text-xl font-bold tracking-tighter text-[#dfe2eb] font-headline">Dagens Live Demo</span>
+  </div>
+</header>
+
+<div class="flex flex-col lg:flex-row">
+  <!-- Desktop Side Nav -->
+  <aside class="hidden lg:flex fixed left-0 top-0 h-full flex-col pt-20 z-40 bg-[#181c22] border-r border-blue-400/10 w-56">
+    <div class="px-5 mb-6">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-2xl">hub</span>
+        <h2 class="text-base font-headline text-[#dfe2eb]">Control Plane</h2>
+      </div>
+    </div>
+    <div class="flex-1 px-2 space-y-1">
+      <a href="#topology" class="section-label active" data-section="topology">
+        <span class="material-symbols-outlined">hub</span> Topology
+      </a>
+      <a href="#workflow" class="section-label" data-section="workflow">
+        <span class="material-symbols-outlined">account_tree</span> Workflow
+      </a>
+      <a href="#timeline" class="section-label" data-section="timeline">
+        <span class="material-symbols-outlined">history</span> Timeline
+      </a>
+      <a href="#controls" class="section-label" data-section="controls">
+        <span class="material-symbols-outlined">tune</span> Controls
+      </a>
+    </div>
+  </aside>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#181c22] border-t border-blue-400/10 safe-area-pb">
+    <div class="flex justify-around py-2">
+      <a href="#topology" class="mobile-nav-item active" data-section="topology">
+        <span class="material-symbols-outlined text-xl">hub</span>
+        <span class="text-[10px] font-label uppercase">Topology</span>
+      </a>
+      <a href="#workflow" class="mobile-nav-item" data-section="workflow">
+        <span class="material-symbols-outlined text-xl">account_tree</span>
+        <span class="text-[10px] font-label uppercase">Workflow</span>
+      </a>
+      <a href="#timeline" class="mobile-nav-item" data-section="timeline">
+        <span class="material-symbols-outlined text-xl">history</span>
+        <span class="text-[10px] font-label uppercase">Timeline</span>
+      </a>
+      <a href="#controls" class="mobile-nav-item" data-section="controls">
+        <span class="material-symbols-outlined text-xl">tune</span>
+        <span class="text-[10px] font-label uppercase">Controls</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="flex-1 lg:ml-56 p-4 md:p-6 pb-20 lg:pb-6 min-h-screen bg-surface">
+    <div id="controls" class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+      <div>
+        <h1 class="heading-responsive font-headline font-bold text-on-surface tracking-tight mb-1">Scripted Live Scenario</h1>
+        <p class="text-responsive text-on-surface-variant max-w-2xl font-body">Leader failover, worker dispatch, and HITL checkpoint/resume in one flow.</p>
+      </div>
+      <div class="flex gap-2 md:gap-3 bg-surface-container-low p-2 rounded-xl w-full md:w-auto touch-target">
+        <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2.5 md:py-2 bg-primary text-on-primary rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all touch-target" id="btn-start" onclick="startDemo()">
+          <span class="material-symbols-outlined text-sm">play_arrow</span> <span class="hidden sm:inline">Start</span> Demo
+        </button>
+        <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2.5 md:py-2 bg-surface-container-highest text-on-surface rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest hover:bg-surface-bright active:scale-95 transition-all touch-target" id="btn-reset" onclick="resetDemo()">
+          <span class="material-symbols-outlined text-sm">refresh</span> <span class="hidden sm:inline">Reset</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
+      <!-- Topology Card -->
+      <div id="topology" class="col-span-1 lg:col-span-8 bg-surface-container-low rounded-xl p-4 md:p-6 relative overflow-hidden flex flex-col min-h-[400px] lg:min-h-[500px] card-scroll">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3">
+          <div>
+            <h3 class="font-headline text-lg flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">hub</span> Cluster Topology
+            </h3>
+            <p class="mt-1 md:mt-2 text-xs text-on-surface-variant">Control-plane ownership, worker dispatch, and failover continuity in one view.</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-primary shadow-[0_0_8px_rgba(173,199,255,0.4)]"></span>
+              <span class="text-[10px] font-label font-bold uppercase tracking-tighter text-on-surface-variant">Leader</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-surface-container-highest"></span>
+              <span class="text-[10px] font-label font-bold uppercase tracking-tighter text-on-surface-variant">Follower</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-secondary animate-pulse"></span>
+              <span class="text-[10px] font-label font-bold uppercase tracking-tighter text-on-surface-variant">Active</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex-1 w-full bg-surface-container-lowest/50 rounded-lg border border-outline-variant/10 overflow-hidden" id="topology-container">
+          <svg height="100%" id="topology-svg" width="100%" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6">
+          <button class="group flex items-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 bg-error-container/20 border border-error/30 hover:bg-error/10 text-error rounded-xl transition-all duration-300 backdrop-blur-md opacity-50 cursor-not-allowed disabled:opacity-50 touch-target" disabled id="btn-failover">
+            <span class="material-symbols-outlined text-error animate-pulse text-lg md:text-xl">priority_high</span>
+            <div class="text-left">
+              <p class="text-[9px] md:text-[10px] font-label font-bold uppercase tracking-[0.15em] leading-none mb-0.5">Critical</p>
+              <p class="font-headline font-bold text-sm tracking-wide">Trigger Leader Loss</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: Workflow + Timeline -->
+      <div class="col-span-1 lg:col-span-4 flex flex-col gap-4 md:gap-6">
+        <!-- Workflow Card -->
+        <div id="workflow" class="bg-surface-container-low rounded-xl p-4 md:p-6 flex flex-col">
+          <h3 class="font-headline text-lg mb-4 md:mb-6 flex items-center gap-2">
+            <span class="material-symbols-outlined text-tertiary">account_tree</span> Active Workflow: job-101
+          </h3>
+          <div class="h-40 md:h-48 w-full" id="workflow-container">
+            <svg height="100%" id="workflow-svg" width="100%" viewBox="0 0 500 200" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+          <div class="mt-4 p-4 rounded-lg bg-tertiary-container/10 border border-tertiary/20 hidden" id="hitl-panel">
+            <div class="flex items-start gap-3 mb-4">
+              <span class="material-symbols-outlined text-tertiary mt-1">pending_actions</span>
+              <div>
+                <p class="font-headline font-bold text-on-surface leading-tight">Human Review Required</p>
+                <p class="text-xs text-on-surface-variant mt-1">Status: AWAITING_HUMAN</p>
+              </div>
+            </div>
+            <button class="w-full bg-tertiary text-on-tertiary font-label font-bold uppercase py-3 rounded transition-all flex items-center justify-center gap-2 opacity-50 cursor-not-allowed disabled:opacity-50 touch-target" disabled id="btn-approval" onclick="resumeFromHumanApproval()">
+              <span class="material-symbols-outlined text-sm">verified_user</span> Approve and Resume
+            </button>
+            <p class="mt-3 text-[11px] text-on-surface-variant leading-relaxed">Phase A replays the accepted run-01 sequence from the API at a visible cadence. Approval resumes the queued events from the client replay buffer.</p>
+          </div>
+        </div>
+
+        <!-- Timeline Card -->
+        <div id="timeline" class="bg-surface-container rounded-xl p-4 md:p-6 flex flex-col flex-1 min-h-[250px] lg:min-h-[300px] card-scroll">
+          <h3 class="font-headline text-lg mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-outline">list_alt</span> Event Timeline
+          </h3>
+          <div class="flex flex-col gap-4 overflow-y-auto pr-2 max-h-[350px] lg:max-h-[400px]" id="event-list">
+            <div class="flex gap-4 items-start relative opacity-50">
+              <div class="relative z-10 w-2 h-2 rounded-full bg-outline-variant mt-2 shrink-0"></div>
+              <div class="flex-1">
+                <p class="text-[10px] font-mono text-outline uppercase">Waiting for session start...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-outline-variant/10">
+      <div class="text-on-surface-variant text-[10px] font-label font-normal tracking-wide">
+        Scripted demo scenario for Dagens control-plane behavior
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script>
+  const colors = {
+    primary: '#adc7ff', secondary: '#66dd8b', tertiary: '#fbbc00',
+    error: '#ffb4ab', surface: '#10141a', surfaceHigh: '#31353c', onSurface: '#dfe2eb'
+  };
+
+  let clusterState = 'idle';
+  let scheduledTimers = [];
+  let activeEdges = [];
+  let markersInitialized = false;
+  let eventSource = null;
+  let eventQueue = [];
+  let isProcessingQueue = false;
+  let awaitingHumanApproval = false;
+
+  const replayDelayMs = 900;
+
+  // Fixed node positions (no resize re-render - SVG viewBox handles scaling)
+  const nodes = [
+    { id: 'api-a', type: 'leader', label: 'API-A', x: 150, y: 100 },
+    { id: 'api-b', type: 'follower', label: 'API-B', x: 450, y: 100 },
+    { id: 'worker-1', type: 'worker', label: 'W-01', x: 200, y: 300 },
+    { id: 'worker-2', type: 'worker', label: 'W-02', x: 400, y: 300 }
+  ];
+
+  const workflowData = [
+    { id: 'n1', label: 'VALIDATE' },
+    { id: 'n2', label: 'AWAITING_HUMAN' },
+    { id: 'n3', label: 'PROCESS' }
+  ];
+
+  const topo_svg = d3.select("#topology-svg");
+  const work_svg = d3.select("#workflow-svg");
+  let topo_g, work_g;
+
+  function initD3() {
+    topo_g = topo_svg.append("g").attr("transform", "translate(40,40)");
+    work_g = work_svg.append("g").attr("transform", "translate(40,80)");
+
+    // Plane labels (hide on small screens)
+    topo_g.append("text")
+      .attr("x", 20).attr("y", 18)
+      .attr("fill", colors.primary)
+      .attr("class", "font-label text-[9px] md:text-[10px] font-bold tracking-[0.18em] uppercase hidden sm:block")
+      .text("Control Plane");
+
+    topo_g.append("text")
+      .attr("x", 20).attr("y", 238)
+      .attr("fill", colors.secondary)
+      .attr("class", "font-label text-[9px] md:text-[10px] font-bold tracking-[0.18em] uppercase hidden sm:block")
+      .text("Execution Plane");
+
+    // Divider lines
+    topo_g.append("line")
+      .attr("x1", 20).attr("y1", 32).attr("x2", 520).attr("y2", 32)
+      .attr("stroke", "rgba(173, 199, 255, 0.12)").attr("stroke-width", 1);
+    topo_g.append("line")
+      .attr("x1", 20).attr("y1", 252).attr("x2", 520).attr("y2", 252)
+      .attr("stroke", "rgba(102, 221, 139, 0.12)").attr("stroke-width", 1);
+
+    // Baseline edges
+    topo_g.selectAll(".baseline-worker-edge")
+      .data([
+        { source: 'api-a', target: 'worker-1' },
+        { source: 'api-a', target: 'worker-2' },
+        { source: 'api-b', target: 'worker-1' },
+        { source: 'api-b', target: 'worker-2' }
+      ])
+      .join("line")
+      .attr("class", "baseline-edge")
+      .attr("x1", d => nodes.find(n => n.id === d.source).x)
+      .attr("y1", d => nodes.find(n => n.id === d.source).y)
+      .attr("x2", d => nodes.find(n => n.id === d.target).x)
+      .attr("y2", d => nodes.find(n => n.id === d.target).y);
+
+    // Leader link
+    topo_g.append("line")
+      .attr("class", "leader-link")
+      .attr("x1", nodes.find(n => n.id === 'api-a').x)
+      .attr("y1", nodes.find(n => n.id === 'api-a').y)
+      .attr("x2", nodes.find(n => n.id === 'api-b').x)
+      .attr("y2", nodes.find(n => n.id === 'api-b').y);
+
+    // Nodes
+    const nodeGroups = topo_g.selectAll(".node")
+      .data(nodes).join("g").attr("class", "node")
+      .attr("transform", d => `translate(${d.x},${d.y})`);
+
+    nodeGroups.append("circle")
+      .attr("r", d => d.type === 'worker' ? 10 : 14)
+      .attr("fill", d => d.type === 'leader' ? colors.primary : colors.surfaceHigh)
+      .attr("stroke", d => d.type === 'leader' ? colors.primary : colors.onSurface)
+      .attr("stroke-width", 2)
+      .attr("id", d => `node-circle-${d.id}`)
+      .attr("class", d => d.type === 'leader' ? 'node-glow' : '');
+
+    nodeGroups.append("text")
+      .attr("dy", 30).attr("text-anchor", "middle")
+      .attr("fill", colors.onSurface)
+      .attr("class", "font-label font-bold text-[9px] md:text-[10px] tracking-widest uppercase")
+      .text(d => d.label).attr("id", d => `node-text-${d.id}`);
+
+    // Role pills
+    nodeGroups.filter(d => d.type !== 'worker')
+      .append("foreignObject")
+      .attr("x", -30).attr("y", -38).attr("width", 60).attr("height", 18)
+      .html(d => `<div xmlns="http://www.w3.org/1999/xhtml" style="display:flex;justify-content:center"><span class="role-pill control-plane">${d.type === 'leader' ? 'leader' : 'follower'}</span></div>`);
+
+    nodeGroups.filter(d => d.type === 'worker')
+      .append("foreignObject")
+      .attr("x", -28).attr("y", -38).attr("width", 56).attr("height", 18)
+      .html(() => `<div xmlns="http://www.w3.org/1999/xhtml" style="display:flex;justify-content:center"><span class="role-pill execution-plane">worker</span></div>`);
+
+    // Worker status
+    nodeGroups.filter(d => d.type === 'worker')
+      .append("text")
+      .attr("dy", 48).attr("text-anchor", "middle")
+      .attr("fill", "rgba(193,198,215,0.75)")
+      .attr("class", "font-label text-[8px] md:text-[9px] tracking-[0.14em] uppercase")
+      .text("idle").attr("id", d => `node-status-${d.id}`);
+
+    // Workflow steps
+    work_g.selectAll("line")
+      .data([0, 1]).join("line")
+      .attr("x1", d => d * 140 + 25).attr("y1", 0)
+      .attr("x2", d => (d + 1) * 140 - 25).attr("y2", 0)
+      .attr("stroke", colors.surfaceHigh).attr("stroke-width", 2);
+
+    const steps = work_g.selectAll(".step")
+      .data(workflowData).join("g").attr("class", "step")
+      .attr("transform", (d, i) => `translate(${i * 140},0)`);
+
+    steps.append("circle")
+      .attr("r", 13).attr("fill", colors.surface)
+      .attr("stroke", colors.surfaceHigh).attr("stroke-width", 2)
+      .attr("id", (d, i) => `step-circle-${i}`);
+
+    steps.append("text")
+      .attr("dy", 32).attr("text-anchor", "middle")
+      .attr("fill", colors.onSurface)
+      .attr("class", "font-label font-bold text-[8px] md:text-[9px] tracking-widest uppercase")
+      .text(d => d.label);
+  }
+
+  function initMarkers() {
+    if (markersInitialized) return;
+    topo_svg.append("defs").append("marker")
+      .attr("id", "arrowhead").attr("viewBox", "0 -5 10 10")
+      .attr("refX", 16).attr("refY", 0)
+      .attr("markerWidth", 5).attr("markerHeight", 5)
+      .attr("orient", "auto")
+      .append("path").attr("d", "M0,-5L10,0L0,5").attr("fill", colors.secondary);
+    markersInitialized = true;
+  }
+
+  function getEventMessage(type, payload) {
+    const map = {
+      'leader_elected': `leader_elected: ${payload.nodeId}`,
+      'task_dispatched': `task_dispatched: ${payload.taskId} → ${payload.workerId}`,
+      'task_started': `task_started: ${payload.taskId} @ ${payload.workerId}`,
+      'task_succeeded': `task_succeeded: ${payload.taskId}`,
+      'job_awaiting_human': `job_awaiting_human: ${payload.jobId}`,
+      'leader_lost': `leader_lost: ${payload.nodeId}`,
+      'leader_promoted': `leader_promoted: ${payload.nodeId}`,
+      'job_resumed': `job_resumed: ${payload.jobId}`,
+      'job_completed': `job_completed: ${payload.jobId}`
+    };
+    return map[type] || type;
+  }
+
+  function getColorClass(type) {
+    if (['leader_elected', 'task_succeeded', 'leader_promoted', 'job_resumed', 'job_completed'].includes(type)) return "bg-secondary";
+    if (type === 'leader_lost') return "bg-error";
+    if (type === 'job_awaiting_human') return "bg-tertiary";
+    return "bg-outline-variant";
+  }
+
+  function addLog(type, payload = {}) {
+    const list = document.getElementById('event-list');
+    const time = new Date().toLocaleTimeString([], { hour12: false });
+    const colorClass = getColorClass(type);
+    const message = getEventMessage(type, payload);
+
+    const item = document.createElement('div');
+    item.className = "flex gap-4 items-start relative animate-in fade-in duration-500";
+    item.innerHTML = `
+      <div class="relative z-10 w-2 h-2 rounded-full ${colorClass} mt-2 shrink-0"></div>
+      <div class="flex-1">
+        <div class="flex justify-between gap-2">
+          <p class="text-[10px] md:text-[11px] font-bold text-on-surface uppercase tracking-wide font-headline">${message}</p>
+          <span class="text-[9px] font-mono text-on-surface-variant">${time}</span>
+        </div>
+      </div>
+    `;
+    list.prepend(item);
+  }
+
+  function updateWorkflow(index, status) {
+    const circle = d3.select(`#step-circle-${index}`);
+    let color = colors.surfaceHigh;
+    if (status === 'running') color = colors.primary;
+    if (status === 'completed') color = colors.secondary;
+    if (status === 'awaiting_human') color = colors.tertiary;
+    circle.transition().duration(500)
+      .attr("fill", status === 'completed' ? color : colors.surface)
+      .attr("stroke", color);
+  }
+
+  function setWorkerActive(workerId, active) {
+    if (!workerId) return;
+    const circle = d3.select(`#node-circle-${workerId}`);
+    const status = d3.select(`#node-status-${workerId}`);
+    if (active) {
+      circle.classed('worker-active', true).attr('fill', colors.secondary);
+      status.text('active').attr('fill', colors.secondary);
+    } else {
+      circle.classed('worker-active', false).attr('fill', colors.surfaceHigh);
+      status.text('idle').attr('fill', 'rgba(193,198,215,0.75)');
+    }
+  }
+
+  function drawDispatchEdge(fromNode, toNode, edgeId) {
+    const from = nodes.find(n => n.id === fromNode);
+    const to = nodes.find(n => n.id === toNode);
+    if (!from || !to) return;
+    topo_g.selectAll(`#edge-${edgeId}`).remove();
+    topo_g.append("line")
+      .attr("id", `edge-${edgeId}`).attr("class", "dispatch-edge")
+      .attr("x1", from.x).attr("y1", from.y)
+      .attr("x2", to.x).attr("y2", to.y)
+      .attr("marker-end", "url(#arrowhead)");
+    activeEdges.push(edgeId);
+  }
+
+  function removeDispatchEdge(edgeId) {
+    topo_g.selectAll(`#edge-${edgeId}`).remove();
+    activeEdges = activeEdges.filter(id => id !== edgeId);
+  }
+
+  function clearAllEdges() {
+    activeEdges.forEach(id => removeDispatchEdge(id));
+    activeEdges = [];
+  }
+
+  function scrollToHITL() {
+    const panel = document.getElementById('hitl-panel');
+    if (!panel) return;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => {
+      panel.scrollIntoView({ 
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'center'
+      });
+      panel.classList.add('hitl-highlight');
+      setTimeout(() => panel.classList.remove('hitl-highlight'), 4500);
+    }, 100);
+  }
+
+  function processEvent(event) {
+    addLog(event.type, event.payload);
+    switch (event.type) {
+      case 'task_dispatched':
+        if (event.payload.nodeId === 'n1') updateWorkflow(0, 'running');
+        if (event.payload.nodeId === 'n3') updateWorkflow(2, 'running');
+        drawDispatchEdge(event.payload.from, event.payload.to, `edge-${event.payload.taskId}`);
+        setWorkerActive(event.payload.workerId, true);
+        break;
+      case 'task_started':
+        schedule(300, () => removeDispatchEdge(`edge-${event.payload.taskId}`));
+        break;
+      case 'task_succeeded':
+        if (event.payload.taskId === 't1') updateWorkflow(0, 'completed');
+        if (event.payload.taskId === 't2') updateWorkflow(2, 'completed');
+        setWorkerActive(event.payload.workerId, false);
+        break;
+      case 'job_awaiting_human':
+        updateWorkflow(1, 'awaiting_human');
+        document.getElementById('hitl-panel').classList.remove('hidden');
+        setApprovalEnabled(true);
+        scrollToHITL();
+        break;
+      case 'leader_lost':
+        d3.select("#node-circle-api-a")
+          .transition().duration(500)
+          .attr("fill", colors.error).attr("stroke", colors.error)
+          .attr("class", "error-glow");
+        d3.select("#node-text-api-a").text("API-A (FAIL)");
+        break;
+      case 'leader_promoted':
+        d3.select("#node-circle-api-b")
+          .transition().duration(1000)
+          .attr("fill", colors.primary).attr("class", "promoted-glow").attr("r", 14);
+        d3.select("#node-text-api-b").text("API-B (LDR)");
+        break;
+      case 'job_resumed':
+        updateWorkflow(1, 'completed');
+        document.getElementById('hitl-panel').classList.add('hidden');
+        setApprovalEnabled(false);
+        break;
+    }
+  }
+
+  function schedule(delayMs, fn) {
+    const timer = setTimeout(fn, delayMs);
+    scheduledTimers.push(timer);
+    return timer;
+  }
+
+  function setApprovalEnabled(enabled) {
+    const button = document.getElementById('btn-approval');
+    if (!button) return;
+    button.disabled = !enabled;
+    button.classList.toggle('opacity-50', !enabled);
+    button.classList.toggle('cursor-not-allowed', !enabled);
+  }
+
+  function enqueueReplayEvent(event) {
+    eventQueue.push(event);
+    drainReplayQueue();
+  }
+
+  function drainReplayQueue() {
+    if (isProcessingQueue || awaitingHumanApproval) return;
+    if (!eventQueue.length) return;
+    isProcessingQueue = true;
+    const nextEvent = eventQueue.shift();
+    processEvent(nextEvent);
+    if (nextEvent.type === 'job_awaiting_human') {
+      awaitingHumanApproval = true;
+      isProcessingQueue = false;
+      return;
+    }
+    schedule(replayDelayMs, () => {
+      isProcessingQueue = false;
+      drainReplayQueue();
+    });
+  }
+
+  function resumeFromHumanApproval() {
+    if (!awaitingHumanApproval) return;
+    awaitingHumanApproval = false;
+    setApprovalEnabled(false);
+    drainReplayQueue();
+  }
+
+  function demoEventsURL() {
+    const params = new URLSearchParams(window.location.search);
+    const apiBase = params.get('api');
+    if (apiBase) return `${apiBase.replace(/\/$/, '')}/v1/demo/events`;
+    return 'http://127.0.0.1:8080/v1/demo/events';
+  }
+
+  function closeDemoStream() {
+    if (eventSource) { eventSource.close(); eventSource = null; }
+  }
+
+  function connectDemoStream() {
+    closeDemoStream();
+    const endpoint = demoEventsURL();
+    eventSource = new EventSource(endpoint);
+    eventSource.onopen = () => { /* stream ready */ };
+    eventSource.addEventListener('demo_event', (evt) => {
+      const streamed = JSON.parse(evt.data);
+      enqueueReplayEvent({ type: streamed.type, payload: streamed.payload || {} });
+    });
+    eventSource.onerror = () => { closeDemoStream(); };
+  }
+
+  async function startDemo() {
+    if (clusterState !== 'idle') return;
+    clusterState = 'running';
+    document.getElementById('btn-start').disabled = true;
+    document.getElementById('btn-start').classList.add('opacity-50', 'cursor-not-allowed');
+    document.getElementById('btn-failover').disabled = true;
+    setApprovalEnabled(false);
+    awaitingHumanApproval = false;
+    isProcessingQueue = false;
+    eventQueue = [];
+    clearAllEdges();
+    connectDemoStream();
+  }
+
+  function resetDemo() {
+    scheduledTimers.forEach(clearTimeout);
+    scheduledTimers = [];
+    closeDemoStream();
+    location.reload();
+  }
+
+  // Active nav state tracking based on scroll position
+  function updateActiveNav() {
+    const sections = ['controls', 'topology', 'workflow', 'timeline'];
+    const scrollPos = window.scrollY + 200;
+    
+    let currentSection = 'controls';
+    for (const section of sections) {
+      const el = document.getElementById(section);
+      if (el && el.offsetTop <= scrollPos) {
+        currentSection = section;
+      }
+    }
+    
+    // Update desktop sidebar
+    document.querySelectorAll('.section-label').forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${currentSection}`) {
+        link.classList.add('active');
+      }
+    });
+    
+    // Update mobile bottom nav
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+      item.classList.remove('active');
+      if (item.dataset.section === currentSection) {
+        item.classList.add('active');
+      }
+    });
+  }
+
+  // Throttled scroll listener for active nav state
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      window.requestAnimationFrame(() => {
+        updateActiveNav();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  });
+
+  window.onload = () => { initD3(); initMarkers(); updateActiveNav(); };
+</script>
+</body>
+</html>

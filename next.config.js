@@ -7,7 +7,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.tailwindcss.com https://*.amazonaws.com https://*.amazoncognito.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com wss://*.amazonaws.com; frame-ancestors 'self'",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.tailwindcss.com https://*.amazonaws.com https://*.amazoncognito.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:8080 http://127.0.0.1:8080 https://*.amazonaws.com https://*.amazoncognito.com wss://*.amazonaws.com; frame-ancestors 'self'",
           },
           {
             key: 'X-Frame-Options',

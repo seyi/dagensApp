@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(true)",
+      "Bash(npm install)",
+      "Bash(rm *)",
+      "Bash(mkdir *)",
+      "Bash(npm install *)",
+      "Bash(npx *)",
+      "Read(//home/azureuser/.qwen/**)",
+      "WebSearch",
+      "WebFetch(www.npmjs.com)",
+      "WebFetch(gist.github.com)",
+      "WebFetch(lobehub.com)",
+      "WebFetch(stitch.withgoogle.com)",
+      "Bash(git push)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  },
+  "$version": 3
+}
