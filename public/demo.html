@@ -178,13 +178,16 @@
         <h1 class="heading-responsive font-headline font-bold text-on-surface tracking-tight mb-1">Scripted Live Scenario</h1>
         <p class="text-responsive text-on-surface-variant max-w-2xl font-body">Leader failover, worker dispatch, and HITL checkpoint/resume in one flow.</p>
       </div>
-      <div class="flex gap-2 md:gap-3 bg-surface-container-low p-2 rounded-xl w-full md:w-auto touch-target">
-        <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2.5 md:py-2 bg-primary text-on-primary rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all touch-target" id="btn-start" onclick="startDemo()">
-          <span class="material-symbols-outlined text-sm">play_arrow</span> <span class="hidden sm:inline">Start</span> Demo
-        </button>
-        <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2.5 md:py-2 bg-surface-container-highest text-on-surface rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest hover:bg-surface-bright active:scale-95 transition-all touch-target" id="btn-reset" onclick="resetDemo()">
-          <span class="material-symbols-outlined text-sm">refresh</span> <span class="hidden sm:inline">Reset</span>
-        </button>
+      <div class="flex flex-col gap-2 w-full md:w-auto">
+        <div class="flex gap-2 md:gap-3 bg-surface-container-low p-2 rounded-xl w-full md:w-auto touch-target">
+          <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2.5 md:py-2 bg-primary text-on-primary rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all touch-target" id="btn-start" onclick="startDemo()">
+            <span class="material-symbols-outlined text-sm">play_arrow</span> <span class="hidden sm:inline">Start</span> Demo
+          </button>
+          <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2.5 md:py-2 bg-surface-container-highest text-on-surface rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest hover:bg-surface-bright active:scale-95 transition-all touch-target" id="btn-reset" onclick="resetDemo()">
+            <span class="material-symbols-outlined text-sm">refresh</span> <span class="hidden sm:inline">Reset</span>
+          </button>
+        </div>
+        <div id="demo-status" class="text-[11px] text-on-surface-variant font-mono px-1">Idle</div>
       </div>
     </div>
 
@@ -232,7 +235,7 @@
         <!-- Workflow Card -->
         <div id="workflow" class="bg-surface-container-low rounded-xl p-4 md:p-6 flex flex-col">
           <h3 class="font-headline text-lg mb-4 md:mb-6 flex items-center gap-2">
-            <span class="material-symbols-outlined text-tertiary">account_tree</span> Active Workflow: job-101
+            <span class="material-symbols-outlined text-tertiary">account_tree</span> Active Workflow: <span id="workflow-job-label">run-01</span>
           </h3>
           <div class="h-40 md:h-48 w-full" id="workflow-container">
             <svg height="100%" id="workflow-svg" width="100%" viewBox="0 0 500 200" preserveAspectRatio="xMidYMid meet"></svg>
@@ -248,7 +251,7 @@
             <button class="w-full bg-tertiary text-on-tertiary font-label font-bold uppercase py-3 rounded transition-all flex items-center justify-center gap-2 opacity-50 cursor-not-allowed disabled:opacity-50 touch-target" disabled id="btn-approval" onclick="resumeFromHumanApproval()">
               <span class="material-symbols-outlined text-sm">verified_user</span> Approve and Resume
             </button>
-            <p class="mt-3 text-[11px] text-on-surface-variant leading-relaxed">Phase A replays the accepted run-01 sequence from the API at a visible cadence. Approval resumes the queued events from the client replay buffer.</p>
+            <p class="mt-3 text-[11px] text-on-surface-variant leading-relaxed">Runtime mode posts a real approval callback when available. Replay mode still works via <code>?mode=replay</code> for the original scripted sequence.</p>
           </div>
         </div>
 
@@ -291,6 +294,10 @@
   let eventQueue = [];
   let isProcessingQueue = false;
   let awaitingHumanApproval = false;
+  let currentMode = 'replay';
+  let currentJobId = '';
+  let currentCallbackURL = '';
+  let runtimeHitlResumed = false;
 
   const replayDelayMs = 900;
 
@@ -454,6 +461,12 @@
     return "bg-outline-variant";
   }
 
+  function setDemoStatus(message) {
+    const el = document.getElementById('demo-status');
+    if (el) el.textContent = message;
+    console.log('[demo]', message);
+  }
+
   function addLog(type, payload = {}) {
     const list = document.getElementById('event-list');
     const time = new Date().toLocaleTimeString([], { hour12: false });
@@ -540,7 +553,10 @@
     switch (event.type) {
       case 'task_dispatched':
         if (event.payload.nodeId === 'n1') updateWorkflow(0, 'running');
-        if (event.payload.nodeId === 'n3') updateWorkflow(2, 'running');
+        else if (event.payload.nodeId === 'n3') updateWorkflow(2, 'running');
+        else if (event.payload.nodeId === 'stage-1') {
+          updateWorkflow(runtimeHitlResumed ? 2 : 0, 'running');
+        }
         drawDispatchEdge(event.payload.from, event.payload.to, `edge-${event.payload.taskId}`);
         setWorkerActive(event.payload.workerId, true);
         break;
@@ -549,10 +565,13 @@
         break;
       case 'task_succeeded':
         if (event.payload.taskId === 't1') updateWorkflow(0, 'completed');
-        if (event.payload.taskId === 't2') updateWorkflow(2, 'completed');
+        else if (event.payload.taskId === 't2') updateWorkflow(2, 'completed');
+        else if (runtimeHitlResumed) updateWorkflow(2, 'completed');
+        else updateWorkflow(0, 'completed');
         setWorkerActive(event.payload.workerId, false);
         break;
       case 'job_awaiting_human':
+        if (event.payload.nodeId === 'stage-1') updateWorkflow(0, 'completed');
         updateWorkflow(1, 'awaiting_human');
         document.getElementById('hitl-panel').classList.remove('hidden');
         setApprovalEnabled(true);
@@ -572,11 +591,59 @@
         d3.select("#node-text-api-b").text("API-B (LDR)");
         break;
       case 'job_resumed':
+        runtimeHitlResumed = true;
         updateWorkflow(1, 'completed');
         document.getElementById('hitl-panel').classList.add('hidden');
         setApprovalEnabled(false);
         break;
+      case 'job_completed':
+        closeDemoStream();
+        break;
     }
+  }
+
+  async function fetchJob(jobId) {
+    const resp = await fetch(`${apiBaseURL()}/v1/jobs/${encodeURIComponent(jobId)}`);
+    if (!resp.ok) throw new Error(`Failed to fetch job (${resp.status})`);
+    return resp.json();
+  }
+
+  function taskStateForRuntimeJob(job) {
+    const stages = Array.isArray(job.Stages) ? job.Stages : [];
+    if (!stages.length) return null;
+    const firstTask = stages[0] && Array.isArray(stages[0].Tasks) ? stages[0].Tasks[0] : null;
+    return firstTask || null;
+  }
+
+  async function pollUntilCompleted(jobId) {
+    const deadline = Date.now() + 45000;
+    let resumedLogged = false;
+    while (Date.now() < deadline) {
+      const job = await fetchJob(jobId);
+      const status = job.Status || job.status || '';
+      if (status === 'COMPLETED' || status === 'SUCCEEDED') {
+        if (!resumedLogged) {
+          processEvent({ type: 'job_resumed', payload: { jobId } });
+          resumedLogged = true;
+        }
+        const task = taskStateForRuntimeJob(job);
+        if (task) {
+          processEvent({ type: 'task_dispatched', payload: { from: 'local', to: 'worker-1', workerId: 'worker-1', taskId: task.ID || 'runtime-task', nodeId: 'stage-1', jobId } });
+          processEvent({ type: 'task_started', payload: { taskId: task.ID || 'runtime-task', workerId: 'worker-1' } });
+          processEvent({ type: 'task_succeeded', payload: { taskId: task.ID || 'runtime-task', workerId: 'worker-1' } });
+        }
+        processEvent({ type: 'job_completed', payload: { jobId } });
+        setDemoStatus('Job completed');
+        return;
+      }
+      if (!resumedLogged) {
+        processEvent({ type: 'job_resumed', payload: { jobId } });
+        resumedLogged = true;
+      }
+      setDemoStatus(`Waiting for completion: ${status || 'unknown'}`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    throw new Error('Timed out waiting for job completion');
   }
 
   function schedule(delayMs, fn) {
@@ -615,48 +682,131 @@
     });
   }
 
-  function resumeFromHumanApproval() {
+  async function resumeFromHumanApproval() {
+    if (currentMode === 'runtime-hitl' && currentCallbackURL) {
+      setApprovalEnabled(false);
+      setDemoStatus('Posting approval callback');
+      const resp = await fetch(currentCallbackURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selected_option: 'approve' })
+      });
+      if (!resp.ok) {
+        setDemoStatus(`Approval failed: ${resp.status}`);
+        addLog('job_awaiting_human', { jobId: currentJobId, nodeId: 'approval_failed' });
+        setApprovalEnabled(true);
+      } else {
+        setDemoStatus('Approval accepted; polling for completion');
+        closeDemoStream();
+        if (currentJobId) {
+          try {
+            await pollUntilCompleted(currentJobId);
+          } catch (err) {
+            const message = err && err.message ? err.message : 'completion_poll_failed';
+            setDemoStatus(`Polling failed: ${message}`);
+            addLog('leader_lost', { nodeId: message });
+          }
+        }
+      }
+      return;
+    }
     if (!awaitingHumanApproval) return;
     awaitingHumanApproval = false;
     setApprovalEnabled(false);
     drainReplayQueue();
   }
 
-  function demoEventsURL() {
+  function apiBaseURL() {
     const params = new URLSearchParams(window.location.search);
     const apiBase = params.get('api');
-    if (apiBase) return `${apiBase.replace(/\/$/, '')}/v1/demo/events`;
-    return 'http://127.0.0.1:8080/v1/demo/events';
+    if (apiBase) return apiBase.replace(/\/$/, '');
+    return 'http://127.0.0.1:8080';
+  }
+
+  function demoMode() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mode') === 'replay' ? 'replay' : 'runtime-hitl';
+  }
+
+  function demoEventsURL(jobId = '') {
+    if (jobId) return `${apiBaseURL()}/v1/demo/events?source=runtime&job_id=${encodeURIComponent(jobId)}`;
+    return `${apiBaseURL()}/v1/demo/events`;
+  }
+
+  async function createHitlDrill() {
+    const url = `${apiBaseURL()}/api/dev/hitl-failover-drill`;
+    setDemoStatus(`Creating HITL drill via ${url}`);
+    const resp = await fetch(url, { method: 'POST' });
+    if (!resp.ok) throw new Error(`Failed to start HITL drill (${resp.status})`);
+    const json = await resp.json();
+    setDemoStatus(`HITL drill created for ${json.job_id || 'unknown-job'}`);
+    return json;
   }
 
   function closeDemoStream() {
     if (eventSource) { eventSource.close(); eventSource = null; }
   }
 
-  function connectDemoStream() {
+  function setWorkflowJobLabel(value) {
+    const el = document.getElementById('workflow-job-label');
+    if (el) el.textContent = value || 'run-01';
+  }
+
+  function connectDemoStream(endpoint) {
     closeDemoStream();
-    const endpoint = demoEventsURL();
+    setDemoStatus(`Connecting stream: ${endpoint}`);
     eventSource = new EventSource(endpoint);
-    eventSource.onopen = () => { /* stream ready */ };
+    eventSource.onopen = () => { setDemoStatus('Stream connected'); };
     eventSource.addEventListener('demo_event', (evt) => {
       const streamed = JSON.parse(evt.data);
+      setDemoStatus(`Received ${streamed.type}`);
       enqueueReplayEvent({ type: streamed.type, payload: streamed.payload || {} });
     });
-    eventSource.onerror = () => { closeDemoStream(); };
+    eventSource.onerror = () => {
+      setDemoStatus('Stream closed; waiting or reconnecting as needed');
+      closeDemoStream();
+    };
   }
 
   async function startDemo() {
     if (clusterState !== 'idle') return;
     clusterState = 'running';
+    setDemoStatus('Starting demo');
+    currentMode = demoMode();
+    currentJobId = '';
+    currentCallbackURL = '';
+    runtimeHitlResumed = false;
     document.getElementById('btn-start').disabled = true;
     document.getElementById('btn-start').classList.add('opacity-50', 'cursor-not-allowed');
     document.getElementById('btn-failover').disabled = true;
+    document.getElementById('hitl-panel').classList.add('hidden');
     setApprovalEnabled(false);
     awaitingHumanApproval = false;
     isProcessingQueue = false;
     eventQueue = [];
     clearAllEdges();
-    connectDemoStream();
+    setWorkflowJobLabel(currentMode === 'replay' ? 'run-01' : 'starting...');
+
+    if (currentMode === 'replay') {
+      connectDemoStream(demoEventsURL());
+      return;
+    }
+
+    try {
+      const drill = await createHitlDrill();
+      currentJobId = drill.job_id || '';
+      currentCallbackURL = drill.callback_url || '';
+      setWorkflowJobLabel(currentJobId || 'runtime');
+      setDemoStatus(`Streaming runtime job ${currentJobId}`);
+      connectDemoStream(demoEventsURL(currentJobId));
+    } catch (err) {
+      const message = err && err.message ? err.message : 'drill_start_failed';
+      setDemoStatus(`Start failed: ${message}`);
+      addLog('leader_lost', { nodeId: message });
+      document.getElementById('btn-start').disabled = false;
+      document.getElementById('btn-start').classList.remove('opacity-50', 'cursor-not-allowed');
+      clusterState = 'idle';
+    }
   }
 
   function resetDemo() {
