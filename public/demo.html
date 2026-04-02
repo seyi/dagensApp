@@ -301,6 +301,7 @@
   let awaitingHumanApproval = false;
   let currentMode = 'replay';
   let currentJobId = '';
+  let currentRequestId = '';
   let currentCallbackURL = '';
   let runtimeHitlResumed = false;
   let lastRuntimeEventID = '';
@@ -751,6 +752,23 @@
     return json;
   }
 
+  async function resetHitlDrill() {
+    const url = `${apiBaseURL()}/api/dev/hitl-failover-drill/reset`;
+    setDemoStatus(`Resetting HITL drill via ${url}`);
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        request_id: currentRequestId || '',
+        job_id: currentJobId || ''
+      })
+    });
+    if (!resp.ok) throw new Error(`Failed to reset HITL drill (${resp.status})`);
+    const json = await resp.json();
+    setDemoStatus(`HITL drill reset to ${json.job_id || 'unknown-job'}`);
+    return json;
+  }
+
   function closeDemoStream() {
     if (eventSource) { eventSource.close(); eventSource = null; }
   }
@@ -783,6 +801,7 @@
     if (!currentMode) currentMode = demoMode();
     setDemoStatus(currentMode === 'replay' ? 'Starting replay demo' : 'Starting runtime HITL demo');
     currentJobId = '';
+    currentRequestId = '';
     currentCallbackURL = '';
     runtimeHitlResumed = false;
     lastRuntimeEventID = '';
@@ -805,6 +824,7 @@
     try {
       const drill = await createHitlDrill();
       currentJobId = drill.job_id || '';
+      currentRequestId = drill.request_id || '';
       currentCallbackURL = drill.callback_url || '';
       setWorkflowJobLabel(currentJobId || 'runtime');
       setDemoStatus(`Streaming runtime job ${currentJobId}`);
@@ -820,10 +840,44 @@
   }
 
   function resetDemo() {
+    if (currentMode === 'runtime-hitl') {
+      resetRuntimeDemo();
+      return;
+    }
     scheduledTimers.forEach(clearTimeout);
     scheduledTimers = [];
     closeDemoStream();
     location.reload();
+  }
+
+  async function resetRuntimeDemo() {
+    scheduledTimers.forEach(clearTimeout);
+    scheduledTimers = [];
+    closeDemoStream();
+    clusterState = 'running';
+    awaitingHumanApproval = false;
+    isProcessingQueue = false;
+    eventQueue = [];
+    runtimeHitlResumed = false;
+    lastRuntimeEventID = '';
+    document.getElementById('hitl-panel').classList.add('hidden');
+    setApprovalEnabled(false);
+    clearAllEdges();
+    setWorkflowJobLabel('resetting...');
+    try {
+      const drill = await resetHitlDrill();
+      currentJobId = drill.job_id || '';
+      currentRequestId = drill.request_id || '';
+      currentCallbackURL = drill.callback_url || '';
+      setWorkflowJobLabel(currentJobId || 'runtime');
+      setDemoStatus(`Streaming runtime job ${currentJobId}`);
+      connectDemoStream(demoEventsURL(currentJobId));
+    } catch (err) {
+      const message = err && err.message ? err.message : 'runtime_reset_failed';
+      setDemoStatus(`Reset failed: ${message}`);
+      clusterState = 'idle';
+      location.reload();
+    }
   }
 
   // Active nav state tracking based on scroll position
