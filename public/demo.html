@@ -181,6 +181,7 @@
       <div class="flex flex-col gap-2 w-full md:w-auto">
         <div class="flex gap-2 bg-surface-container-low p-2 rounded-xl w-full md:w-auto touch-target" id="mode-selector">
           <button class="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target" id="mode-runtime" type="button" onclick="setMode('runtime-hitl')">Runtime HITL</button>
+          <button class="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target" id="mode-ha-runtime" type="button" onclick="setMode('ha-runtime')">HA Runtime</button>
           <button class="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target" id="mode-replay" type="button" onclick="setMode('replay')">Replay Failover</button>
         </div>
         <div class="flex gap-2 md:gap-3 bg-surface-container-low p-2 rounded-xl w-full md:w-auto touch-target">
@@ -225,11 +226,11 @@
           <svg height="100%" id="topology-svg" width="100%" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet"></svg>
         </div>
         <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6">
-          <button class="group flex items-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 bg-error-container/20 border border-error/30 hover:bg-error/10 text-error rounded-xl transition-all duration-300 backdrop-blur-md opacity-50 cursor-not-allowed disabled:opacity-50 touch-target" disabled id="btn-failover">
+          <button class="group flex items-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 bg-error-container/20 border border-error/30 hover:bg-error/10 text-error rounded-xl transition-all duration-300 backdrop-blur-md opacity-50 cursor-not-allowed disabled:opacity-50 touch-target" disabled id="btn-failover" onclick="triggerFailover()">
             <span class="material-symbols-outlined text-error animate-pulse text-lg md:text-xl">priority_high</span>
             <div class="text-left">
               <p class="text-[9px] md:text-[10px] font-label font-bold uppercase tracking-[0.15em] leading-none mb-0.5">Critical</p>
-              <p class="font-headline font-bold text-sm tracking-wide">Replay-Only Failover</p>
+              <p class="font-headline font-bold text-sm tracking-wide">Trigger Leader Loss</p>
             </div>
           </button>
         </div>
@@ -305,6 +306,7 @@
   let currentCallbackURL = '';
   let runtimeHitlResumed = false;
   let lastRuntimeEventID = '';
+  let lastFailoverTriggerAt = 0;
 
   const replayDelayMs = 900;
 
@@ -475,48 +477,79 @@
   }
 
   function selectedMode() {
-    return currentMode === 'replay' ? 'replay' : 'runtime-hitl';
+    if (currentMode === 'replay') return 'replay';
+    if (currentMode === 'ha-runtime') return 'ha-runtime';
+    return 'runtime-hitl';
   }
 
   function updateModeUI() {
     const runtimeBtn = document.getElementById('mode-runtime');
+    const haRuntimeBtn = document.getElementById('mode-ha-runtime');
     const replayBtn = document.getElementById('mode-replay');
     const copy = document.getElementById('demo-mode-copy');
     const title = document.getElementById('demo-title');
     const subtitle = document.getElementById('demo-subtitle');
-    const runtimeActive = selectedMode() === 'runtime-hitl';
+    const mode = selectedMode();
+    const runtimeActive = mode === 'runtime-hitl';
+    const haRuntimeActive = mode === 'ha-runtime';
+    const replayActive = mode === 'replay';
     const activeClasses = 'bg-primary text-on-primary';
     const inactiveClasses = 'bg-surface-container-highest text-on-surface';
     if (runtimeBtn) {
       runtimeBtn.className = `${runtimeActive ? activeClasses : inactiveClasses} flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target`;
     }
+    if (haRuntimeBtn) {
+      haRuntimeBtn.className = `${haRuntimeActive ? activeClasses : inactiveClasses} flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target`;
+    }
     if (replayBtn) {
-      replayBtn.className = `${runtimeActive ? inactiveClasses : activeClasses} flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target`;
+      replayBtn.className = `${replayActive ? activeClasses : inactiveClasses} flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target`;
     }
     if (copy) {
-      copy.textContent = runtimeActive
-        ? 'Runtime HITL uses the live single-node drill path. Replay shows the broader scripted HA failover story.'
-        : 'Replay mode shows the broader scripted HA failover storyline. Runtime HITL uses the live single-node drill.';
+      if (runtimeActive) {
+        copy.textContent = 'Runtime HITL uses the live single-node drill path.';
+      } else if (haRuntimeActive) {
+        copy.textContent = 'HA Runtime uses the live HA drill contract and allows real failover triggering when configured.';
+      } else {
+        copy.textContent = 'Replay mode shows the broader scripted HA failover storyline.';
+      }
     }
     if (title) {
-      title.textContent = runtimeActive ? 'Runtime HITL Demo' : 'Replay Failover Demo';
+      if (runtimeActive) title.textContent = 'Runtime HITL Demo';
+      else if (haRuntimeActive) title.textContent = 'HA Runtime Demo';
+      else title.textContent = 'Replay Failover Demo';
     }
     if (subtitle) {
-      subtitle.textContent = runtimeActive
-        ? 'A live single-node drill showing HITL pause, approval callback, and resumed completion.'
-        : 'A scripted walkthrough of leader failover, worker dispatch, and takeover continuity.';
+      if (runtimeActive) {
+        subtitle.textContent = 'A live single-node drill showing HITL pause, approval callback, and resumed completion.';
+      } else if (haRuntimeActive) {
+        subtitle.textContent = 'A live HA-backed drill for leader loss, takeover, HITL resume, and continuity.';
+      } else {
+        subtitle.textContent = 'A scripted walkthrough of leader failover, worker dispatch, and takeover continuity.';
+      }
     }
+    updateFailoverButtonState(clusterState === 'running' && haRuntimeActive);
   }
 
   function setMode(mode) {
-    currentMode = mode === 'replay' ? 'replay' : 'runtime-hitl';
+    if (mode === 'replay') currentMode = 'replay';
+    else if (mode === 'ha-runtime') currentMode = 'ha-runtime';
+    else currentMode = 'runtime-hitl';
     const url = new URL(window.location.href);
-    if (currentMode === 'replay') url.searchParams.set('mode', 'replay');
-    else url.searchParams.delete('mode');
+    if (currentMode === 'replay') {
+      url.searchParams.set('mode', 'replay');
+    } else if (currentMode === 'ha-runtime') {
+      url.searchParams.set('mode', 'ha-runtime');
+    } else {
+      url.searchParams.delete('mode');
+    }
     window.history.replaceState({}, '', url.toString());
     updateModeUI();
-    setWorkflowJobLabel(currentMode === 'replay' ? 'run-01' : 'runtime');
-    setDemoStatus(currentMode === 'replay' ? 'Replay mode selected' : 'Runtime HITL mode selected');
+    if (currentMode === 'replay') setWorkflowJobLabel('run-01');
+    else if (currentMode === 'ha-runtime') setWorkflowJobLabel('ha-runtime');
+    else setWorkflowJobLabel('runtime');
+    if (currentMode === 'replay') setDemoStatus('Replay mode selected');
+    else if (currentMode === 'ha-runtime') setDemoStatus('HA Runtime mode selected');
+    else setDemoStatus('Runtime HITL mode selected');
   }
 
   function addLog(type, payload = {}) {
@@ -693,7 +726,7 @@
   }
 
   async function resumeFromHumanApproval() {
-    if (currentMode === 'runtime-hitl' && currentCallbackURL) {
+    if ((currentMode === 'runtime-hitl' || currentMode === 'ha-runtime') && currentCallbackURL) {
       setApprovalEnabled(false);
       setDemoStatus('Posting approval callback');
       const resp = await fetch(currentCallbackURL, {
@@ -730,7 +763,10 @@
 
   function demoMode() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('mode') === 'replay' ? 'replay' : 'runtime-hitl';
+    const mode = params.get('mode');
+    if (mode === 'replay') return 'replay';
+    if (mode === 'ha-runtime') return 'ha-runtime';
+    return 'runtime-hitl';
   }
 
   function demoEventsURL(jobId = '', lastEventID = '') {
@@ -743,7 +779,8 @@
   }
 
   async function createHitlDrill() {
-    const url = `${apiBaseURL()}/api/dev/hitl-failover-drill`;
+    const path = currentMode === 'ha-runtime' ? '/api/dev/ha-hitl-failover-drill' : '/api/dev/hitl-failover-drill';
+    const url = `${apiBaseURL()}${path}`;
     setDemoStatus(`Creating HITL drill via ${url}`);
     const resp = await fetch(url, { method: 'POST' });
     if (!resp.ok) throw new Error(`Failed to start HITL drill (${resp.status})`);
@@ -753,7 +790,8 @@
   }
 
   async function resetHitlDrill() {
-    const url = `${apiBaseURL()}/api/dev/hitl-failover-drill/reset`;
+    const path = currentMode === 'ha-runtime' ? '/api/dev/ha-hitl-failover-drill/reset' : '/api/dev/hitl-failover-drill/reset';
+    const url = `${apiBaseURL()}${path}`;
     setDemoStatus(`Resetting HITL drill via ${url}`);
     const resp = await fetch(url, {
       method: 'POST',
@@ -771,6 +809,14 @@
 
   function closeDemoStream() {
     if (eventSource) { eventSource.close(); eventSource = null; }
+  }
+
+  function updateFailoverButtonState(enabled) {
+    const btn = document.getElementById('btn-failover');
+    if (!btn) return;
+    btn.disabled = !enabled;
+    btn.classList.toggle('opacity-50', !enabled);
+    btn.classList.toggle('cursor-not-allowed', !enabled);
   }
 
   function setWorkflowJobLabel(value) {
@@ -799,7 +845,9 @@
     if (clusterState !== 'idle') return;
     clusterState = 'running';
     if (!currentMode) currentMode = demoMode();
-    setDemoStatus(currentMode === 'replay' ? 'Starting replay demo' : 'Starting runtime HITL demo');
+    if (currentMode === 'replay') setDemoStatus('Starting replay demo');
+    else if (currentMode === 'ha-runtime') setDemoStatus('Starting HA runtime demo');
+    else setDemoStatus('Starting runtime HITL demo');
     currentJobId = '';
     currentRequestId = '';
     currentCallbackURL = '';
@@ -807,14 +855,15 @@
     lastRuntimeEventID = '';
     document.getElementById('btn-start').disabled = true;
     document.getElementById('btn-start').classList.add('opacity-50', 'cursor-not-allowed');
-    document.getElementById('btn-failover').disabled = true;
+    updateFailoverButtonState(false);
     document.getElementById('hitl-panel').classList.add('hidden');
     setApprovalEnabled(false);
     awaitingHumanApproval = false;
     isProcessingQueue = false;
     eventQueue = [];
     clearAllEdges();
-    setWorkflowJobLabel(currentMode === 'replay' ? 'run-01' : 'starting...');
+    if (currentMode === 'replay') setWorkflowJobLabel('run-01');
+    else setWorkflowJobLabel('starting...');
 
     if (currentMode === 'replay') {
       connectDemoStream(demoEventsURL());
@@ -829,6 +878,7 @@
       setWorkflowJobLabel(currentJobId || 'runtime');
       setDemoStatus(`Streaming runtime job ${currentJobId}`);
       connectDemoStream(demoEventsURL(currentJobId));
+      updateFailoverButtonState(currentMode === 'ha-runtime');
     } catch (err) {
       const message = err && err.message ? err.message : 'drill_start_failed';
       setDemoStatus(`Start failed: ${message}`);
@@ -836,11 +886,12 @@
       document.getElementById('btn-start').disabled = false;
       document.getElementById('btn-start').classList.remove('opacity-50', 'cursor-not-allowed');
       clusterState = 'idle';
+      updateFailoverButtonState(false);
     }
   }
 
   function resetDemo() {
-    if (currentMode === 'runtime-hitl') {
+    if (currentMode === 'runtime-hitl' || currentMode === 'ha-runtime') {
       resetRuntimeDemo();
       return;
     }
@@ -864,6 +915,7 @@
     setApprovalEnabled(false);
     clearAllEdges();
     setWorkflowJobLabel('resetting...');
+    updateFailoverButtonState(false);
     try {
       const drill = await resetHitlDrill();
       currentJobId = drill.job_id || '';
@@ -872,11 +924,55 @@
       setWorkflowJobLabel(currentJobId || 'runtime');
       setDemoStatus(`Streaming runtime job ${currentJobId}`);
       connectDemoStream(demoEventsURL(currentJobId));
+      updateFailoverButtonState(currentMode === 'ha-runtime');
     } catch (err) {
       const message = err && err.message ? err.message : 'runtime_reset_failed';
       setDemoStatus(`Reset failed: ${message}`);
       clusterState = 'idle';
+      updateFailoverButtonState(false);
       location.reload();
+    }
+  }
+
+  async function triggerFailover() {
+    if (currentMode !== 'ha-runtime' || !currentJobId) return;
+    const now = Date.now();
+    if (now-lastFailoverTriggerAt < 3000) return;
+    lastFailoverTriggerAt = now;
+    updateFailoverButtonState(false);
+    const url = `${apiBaseURL()}/api/dev/ha-hitl-failover-drill/failover`;
+    setDemoStatus(`Triggering HA failover via ${url}`);
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          job_id: currentJobId || '',
+          request_id: currentRequestId || ''
+        })
+      });
+      if (!resp.ok) {
+        const msg = (await resp.text()).trim();
+        if (resp.status === 503) {
+          setDemoStatus('HA failover trigger is not configured on backend');
+          addLog('leader_lost', { nodeId: 'failover_not_configured' });
+        } else if (resp.status === 403) {
+          setDemoStatus('HA failover trigger rejected (auth/token)');
+          addLog('leader_lost', { nodeId: 'failover_forbidden' });
+        } else {
+          setDemoStatus(`Failover trigger failed: ${resp.status}`);
+          addLog('leader_lost', { nodeId: `failover_error:${msg || resp.status}` });
+        }
+      } else {
+        setDemoStatus('Failover trigger accepted');
+      }
+    } catch (err) {
+      setDemoStatus('Failover trigger request failed');
+      addLog('leader_lost', { nodeId: 'failover_request_failed' });
+    } finally {
+      if (clusterState === 'running' && currentMode === 'ha-runtime') {
+        updateFailoverButtonState(true);
+      }
     }
   }
 
@@ -922,7 +1018,7 @@
     }
   });
 
-  window.onload = () => { currentMode = demoMode(); initD3(); initMarkers(); updateModeUI(); setWorkflowJobLabel(currentMode === 'replay' ? 'run-01' : 'runtime'); updateActiveNav(); };
+  window.onload = () => { currentMode = demoMode(); initD3(); initMarkers(); updateModeUI(); setWorkflowJobLabel(currentMode === 'replay' ? 'run-01' : (currentMode === 'ha-runtime' ? 'ha-runtime' : 'runtime')); updateActiveNav(); };
 </script>
 </body>
 </html>
