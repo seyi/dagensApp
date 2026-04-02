@@ -179,6 +179,10 @@
         <p class="text-responsive text-on-surface-variant max-w-2xl font-body">Leader failover, worker dispatch, and HITL checkpoint/resume in one flow.</p>
       </div>
       <div class="flex flex-col gap-2 w-full md:w-auto">
+        <div class="flex gap-2 bg-surface-container-low p-2 rounded-xl w-full md:w-auto touch-target" id="mode-selector">
+          <button class="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target" id="mode-runtime" type="button" onclick="setMode('runtime-hitl')">Runtime HITL</button>
+          <button class="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target" id="mode-replay" type="button" onclick="setMode('replay')">Replay Failover</button>
+        </div>
         <div class="flex gap-2 md:gap-3 bg-surface-container-low p-2 rounded-xl w-full md:w-auto touch-target">
           <button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2.5 md:py-2 bg-primary text-on-primary rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all touch-target" id="btn-start" onclick="startDemo()">
             <span class="material-symbols-outlined text-sm">play_arrow</span> <span class="hidden sm:inline">Start</span> Demo
@@ -187,6 +191,7 @@
             <span class="material-symbols-outlined text-sm">refresh</span> <span class="hidden sm:inline">Reset</span>
           </button>
         </div>
+        <div id="demo-mode-copy" class="text-[11px] text-on-surface-variant px-1">Runtime HITL uses the live drill path. Replay shows the full scripted failover story.</div>
         <div id="demo-status" class="text-[11px] text-on-surface-variant font-mono px-1">Idle</div>
       </div>
     </div>
@@ -465,6 +470,41 @@
     const el = document.getElementById('demo-status');
     if (el) el.textContent = message;
     console.log('[demo]', message);
+  }
+
+  function selectedMode() {
+    return currentMode === 'replay' ? 'replay' : 'runtime-hitl';
+  }
+
+  function updateModeUI() {
+    const runtimeBtn = document.getElementById('mode-runtime');
+    const replayBtn = document.getElementById('mode-replay');
+    const copy = document.getElementById('demo-mode-copy');
+    const runtimeActive = selectedMode() === 'runtime-hitl';
+    const activeClasses = 'bg-primary text-on-primary';
+    const inactiveClasses = 'bg-surface-container-highest text-on-surface';
+    if (runtimeBtn) {
+      runtimeBtn.className = `${runtimeActive ? activeClasses : inactiveClasses} flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target`;
+    }
+    if (replayBtn) {
+      replayBtn.className = `${runtimeActive ? inactiveClasses : activeClasses} flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg font-label font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all touch-target`;
+    }
+    if (copy) {
+      copy.textContent = runtimeActive
+        ? 'Runtime HITL uses the live drill path. Replay shows the full scripted failover story.'
+        : 'Replay mode shows the full scripted failover storyline. Runtime HITL uses the live backend drill.';
+    }
+  }
+
+  function setMode(mode) {
+    currentMode = mode === 'replay' ? 'replay' : 'runtime-hitl';
+    const url = new URL(window.location.href);
+    if (currentMode === 'replay') url.searchParams.set('mode', 'replay');
+    else url.searchParams.delete('mode');
+    window.history.replaceState({}, '', url.toString());
+    updateModeUI();
+    setWorkflowJobLabel(currentMode === 'replay' ? 'run-01' : 'runtime');
+    setDemoStatus(currentMode === 'replay' ? 'Replay mode selected' : 'Runtime HITL mode selected');
   }
 
   function addLog(type, payload = {}) {
@@ -771,8 +811,8 @@
   async function startDemo() {
     if (clusterState !== 'idle') return;
     clusterState = 'running';
-    setDemoStatus('Starting demo');
-    currentMode = demoMode();
+    if (!currentMode) currentMode = demoMode();
+    setDemoStatus(currentMode === 'replay' ? 'Starting replay demo' : 'Starting runtime HITL demo');
     currentJobId = '';
     currentCallbackURL = '';
     runtimeHitlResumed = false;
@@ -858,7 +898,7 @@
     }
   });
 
-  window.onload = () => { initD3(); initMarkers(); updateActiveNav(); };
+  window.onload = () => { currentMode = demoMode(); initD3(); initMarkers(); updateModeUI(); setWorkflowJobLabel(currentMode === 'replay' ? 'run-01' : 'runtime'); updateActiveNav(); };
 </script>
 </body>
 </html>
