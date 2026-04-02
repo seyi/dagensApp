@@ -303,6 +303,7 @@
   let currentJobId = '';
   let currentCallbackURL = '';
   let runtimeHitlResumed = false;
+  let lastRuntimeEventID = '';
 
   const replayDelayMs = 900;
 
@@ -652,49 +653,7 @@
     }
   }
 
-  async function fetchJob(jobId) {
-    const resp = await fetch(`${apiBaseURL()}/v1/jobs/${encodeURIComponent(jobId)}`);
-    if (!resp.ok) throw new Error(`Failed to fetch job (${resp.status})`);
-    return resp.json();
-  }
 
-  function taskStateForRuntimeJob(job) {
-    const stages = Array.isArray(job.Stages) ? job.Stages : [];
-    if (!stages.length) return null;
-    const firstTask = stages[0] && Array.isArray(stages[0].Tasks) ? stages[0].Tasks[0] : null;
-    return firstTask || null;
-  }
-
-  async function pollUntilCompleted(jobId) {
-    const deadline = Date.now() + 45000;
-    let resumedLogged = false;
-    while (Date.now() < deadline) {
-      const job = await fetchJob(jobId);
-      const status = job.Status || job.status || '';
-      if (status === 'COMPLETED' || status === 'SUCCEEDED') {
-        if (!resumedLogged) {
-          processEvent({ type: 'job_resumed', payload: { jobId } });
-          resumedLogged = true;
-        }
-        const task = taskStateForRuntimeJob(job);
-        if (task) {
-          processEvent({ type: 'task_dispatched', payload: { from: 'local', to: 'worker-1', workerId: 'worker-1', taskId: task.ID || 'runtime-task', nodeId: 'stage-1', jobId } });
-          processEvent({ type: 'task_started', payload: { taskId: task.ID || 'runtime-task', workerId: 'worker-1' } });
-          processEvent({ type: 'task_succeeded', payload: { taskId: task.ID || 'runtime-task', workerId: 'worker-1' } });
-        }
-        processEvent({ type: 'job_completed', payload: { jobId } });
-        setDemoStatus('Job completed');
-        return;
-      }
-      if (!resumedLogged) {
-        processEvent({ type: 'job_resumed', payload: { jobId } });
-        resumedLogged = true;
-      }
-      setDemoStatus(`Waiting for completion: ${status || 'unknown'}`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    throw new Error('Timed out waiting for job completion');
-  }
 
   function schedule(delayMs, fn) {
     const timer = setTimeout(fn, delayMs);
@@ -746,16 +705,11 @@
         addLog('job_awaiting_human', { jobId: currentJobId, nodeId: 'approval_failed' });
         setApprovalEnabled(true);
       } else {
-        setDemoStatus('Approval accepted; polling for completion');
+        setDemoStatus('Approval accepted; reconnecting stream');
+        awaitingHumanApproval = false;
         closeDemoStream();
         if (currentJobId) {
-          try {
-            await pollUntilCompleted(currentJobId);
-          } catch (err) {
-            const message = err && err.message ? err.message : 'completion_poll_failed';
-            setDemoStatus(`Polling failed: ${message}`);
-            addLog('leader_lost', { nodeId: message });
-          }
+          connectDemoStream(demoEventsURL(currentJobId, lastRuntimeEventID));
         }
       }
       return;
@@ -778,9 +732,13 @@
     return params.get('mode') === 'replay' ? 'replay' : 'runtime-hitl';
   }
 
-  function demoEventsURL(jobId = '') {
-    if (jobId) return `${apiBaseURL()}/v1/demo/events?source=runtime&job_id=${encodeURIComponent(jobId)}`;
-    return `${apiBaseURL()}/v1/demo/events`;
+  function demoEventsURL(jobId = '', lastEventID = '') {
+    if (!jobId) return `${apiBaseURL()}/v1/demo/events`;
+    const url = new URL(`${apiBaseURL()}/v1/demo/events`);
+    url.searchParams.set('source', 'runtime');
+    url.searchParams.set('job_id', jobId);
+    if (lastEventID) url.searchParams.set('last_event_id', lastEventID);
+    return url.toString();
   }
 
   async function createHitlDrill() {
@@ -809,6 +767,7 @@
     eventSource.onopen = () => { setDemoStatus('Stream connected'); };
     eventSource.addEventListener('demo_event', (evt) => {
       const streamed = JSON.parse(evt.data);
+      if (streamed.event_id || evt.lastEventId) lastRuntimeEventID = streamed.event_id || evt.lastEventId;
       setDemoStatus(`Received ${streamed.type}`);
       enqueueReplayEvent({ type: streamed.type, payload: streamed.payload || {} });
     });
@@ -826,6 +785,7 @@
     currentJobId = '';
     currentCallbackURL = '';
     runtimeHitlResumed = false;
+    lastRuntimeEventID = '';
     document.getElementById('btn-start').disabled = true;
     document.getElementById('btn-start').classList.add('opacity-50', 'cursor-not-allowed');
     document.getElementById('btn-failover').disabled = true;
