@@ -761,6 +761,15 @@
     return 'http://127.0.0.1:8080';
   }
 
+  function haTriggerToken() {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get('ha_trigger_token') || '').trim();
+  }
+
+  function sleepMs(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   function demoMode() {
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode');
@@ -941,18 +950,38 @@
     lastFailoverTriggerAt = now;
     updateFailoverButtonState(false);
     const url = `${apiBaseURL()}/api/dev/ha-hitl-failover-drill/failover`;
+    const triggerToken = haTriggerToken();
+    const maxAttempts = 3;
+    const backoffMs = [400, 900];
     setDemoStatus(`Triggering HA failover via ${url}`);
+
     try {
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          job_id: currentJobId || '',
-          request_id: currentRequestId || ''
-        })
-      });
-      if (!resp.ok) {
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const headers = { 'Content-Type': 'application/json' };
+        if (triggerToken) headers['X-Dagens-HA-Trigger-Token'] = triggerToken;
+
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            job_id: currentJobId || '',
+            request_id: currentRequestId || ''
+          })
+        });
+
+        if (resp.ok) {
+          setDemoStatus('Failover trigger accepted');
+          return;
+        }
+
         const msg = (await resp.text()).trim();
+        const shouldRetry = resp.status === 502 && attempt < maxAttempts;
+        if (shouldRetry) {
+          setDemoStatus(`Failover trigger transient error (${resp.status}); retrying ${attempt + 1}/${maxAttempts}`);
+          await sleepMs(backoffMs[Math.min(attempt - 1, backoffMs.length - 1)]);
+          continue;
+        }
+
         if (resp.status === 503) {
           setDemoStatus('HA failover trigger is not configured on backend');
           addLog('leader_lost', { nodeId: 'failover_not_configured' });
@@ -963,8 +992,7 @@
           setDemoStatus(`Failover trigger failed: ${resp.status}`);
           addLog('leader_lost', { nodeId: `failover_error:${msg || resp.status}` });
         }
-      } else {
-        setDemoStatus('Failover trigger accepted');
+        return;
       }
     } catch (err) {
       setDemoStatus('Failover trigger request failed');
