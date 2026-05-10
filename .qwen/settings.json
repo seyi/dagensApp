@@ -16,7 +16,9 @@
       "WebFetch(stitch.withgoogle.com)",
       "Bash(git push)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(lsof *)",
+      "Bash(fuser *)"
     ]
   },
   "$version": 3
