@@ -307,6 +307,7 @@
   let runtimeHitlResumed = false;
   let lastRuntimeEventID = '';
   let lastFailoverTriggerAt = 0;
+  let streamConnectTimer = null;
 
   const replayDelayMs = 900;
 
@@ -817,6 +818,10 @@
   }
 
   function closeDemoStream() {
+    if (streamConnectTimer) {
+      clearTimeout(streamConnectTimer);
+      streamConnectTimer = null;
+    }
     if (eventSource) { eventSource.close(); eventSource = null; }
   }
 
@@ -835,9 +840,28 @@
 
   function connectDemoStream(endpoint) {
     closeDemoStream();
+    if ((currentMode === 'runtime-hitl' || currentMode === 'ha-runtime') && !currentJobId) {
+      setDemoStatus('No runtime job yet. Click Start Demo first.');
+      return;
+    }
     setDemoStatus(`Connecting stream: ${endpoint}`);
+    let streamOpened = false;
     eventSource = new EventSource(endpoint);
-    eventSource.onopen = () => { setDemoStatus('Stream connected'); };
+    streamConnectTimer = setTimeout(() => {
+      if (streamOpened) return;
+      const origin = window.location.origin;
+      const api = apiBaseURL();
+      setDemoStatus(`Stream connection timed out. Check API (${api}) and CORS for origin ${origin}`);
+      addLog('leader_lost', { nodeId: `stream_timeout:${origin}` });
+    }, 5000);
+    eventSource.onopen = () => {
+      streamOpened = true;
+      if (streamConnectTimer) {
+        clearTimeout(streamConnectTimer);
+        streamConnectTimer = null;
+      }
+      setDemoStatus('Stream connected');
+    };
     eventSource.addEventListener('demo_event', (evt) => {
       const streamed = JSON.parse(evt.data);
       if (streamed.event_id || evt.lastEventId) lastRuntimeEventID = streamed.event_id || evt.lastEventId;
@@ -845,8 +869,26 @@
       enqueueReplayEvent({ type: streamed.type, payload: streamed.payload || {} });
     });
     eventSource.onerror = () => {
-      setDemoStatus('Stream closed; waiting or reconnecting as needed');
+      if (streamConnectTimer) {
+        clearTimeout(streamConnectTimer);
+        streamConnectTimer = null;
+      }
+      const origin = window.location.origin;
+      const api = apiBaseURL();
+      const runtimeMode = currentMode === 'runtime-hitl' || currentMode === 'ha-runtime';
+      if (runtimeMode && !currentJobId) {
+        setDemoStatus('Runtime stream needs a job_id. Click Start Demo first.');
+      } else {
+        setDemoStatus(`SSE stream error/disconnect. Check API ${api} and CORS for ${origin}`);
+      }
+      addLog('leader_lost', { nodeId: `stream_error:${origin}` });
       closeDemoStream();
+      if (runtimeMode && currentJobId) {
+        setTimeout(() => {
+          if (eventSource) return;
+          connectDemoStream(demoEventsURL(currentJobId, lastRuntimeEventID));
+        }, 1200);
+      }
     };
   }
 
