@@ -220,6 +220,23 @@
   color: var(--blue-900);
 }
 
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardLink:hover {
+  background: var(--purple-50);
+}
+
+.cardTagline {
+  color: var(--purple-600);
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
 .cardText {
   color: var(--muted);
   font-size: 15px;
