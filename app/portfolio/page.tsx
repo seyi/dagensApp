@@ -113,6 +113,7 @@ export default function PortfolioPage() {
             Seyi Akadri<span>.</span>
           </a>
           <div className={styles.navLinks}>
+            <a href="#experience">Experience</a>
             <a href="#theo">THEO</a>
             <a href="#presentation">Presentation</a>
             <a href="#platforms">Platforms</a>
@@ -149,6 +150,72 @@ export default function PortfolioPage() {
           </div>
         </div>
       </header>
+
+      <section id="experience" className={styles.section}>
+        <div className={styles.wrap}>
+          <h2 className={styles.sectionTitle}>Experience</h2>
+
+          <article className={styles.role}>
+            <div className={styles.roleHead}>
+              <div>
+                <h3 className={styles.roleTitle}>GIS Developer · ACReSAL</h3>
+                <p className={styles.roleOrg}>
+                  Agro-Climatic Resilience in Semi-Arid Landscapes, a World Bank-financed programme of the Federal
+                  Government of Nigeria
+                </p>
+              </div>
+              <span className={styles.roleDates}>Oct 2025 – Mar 2026</span>
+            </div>
+            <div className={styles.roleBody}>
+              <ul className={styles.roleList}>
+                <li>
+                  Built the geospatial platform tracking <strong>972 interventions</strong> across{' '}
+                  <strong>19 states</strong>, covering about <strong>844,000 ha</strong> of project impact area.
+                </li>
+                <li>Architected the backend on Azure with Cosmos DB, and the Next.js front end on Azure Web App.</li>
+                <li>Implemented NDVI vegetation analysis and change detection.</li>
+                <li>Mapping with interactive web map layers and the Esri ArcGIS Pro suite; built the project’s story maps.</li>
+                <li>
+                  Developed the mobile data-collection app as a custom KoboToolbox app, self-hosted on an Azure Linux
+                  instance.
+                </li>
+                <li>Integrated the GIS with the project’s MIS, and published it at acresalgis.com.</li>
+              </ul>
+              <figure className={styles.roleShot}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/portfolio/acresal-dashboard.png"
+                  alt="ACReSAL GIS dashboard: 972 project interventions, 843,889 ha total project impact area, with interventions, demographics, catchments and NDVI analysis tabs"
+                  loading="lazy"
+                />
+                <figcaption>The ACReSAL GIS dashboard: interventions, demographics, catchments and NDVI analysis.</figcaption>
+              </figure>
+            </div>
+            <div className={styles.actions}>
+              <a className={styles.btnGhost} href="https://www.acresalgis.com" target="_blank" rel="noopener noreferrer">
+                ACReSAL GIS ↗
+              </a>
+              <a className={styles.btnGhost} href="https://acresal.gov.ng" target="_blank" rel="noopener noreferrer">
+                acresal.gov.ng ↗
+              </a>
+            </div>
+          </article>
+
+          <article className={styles.role}>
+            <div className={styles.roleHead}>
+              <div>
+                <h3 className={styles.roleTitle}>Builder · THEO, The Elevation Church</h3>
+                <p className={styles.roleOrg}>AI faith companion, from first prototype to production</p>
+              </div>
+              <span className={styles.roleDates}>Nov 2025 – present</span>
+            </div>
+            <p className={styles.cardText}>
+              Retrieval over 350 sermons with cited answers, the Accelerate 2026 conference app, an approval workflow for
+              conference moments with audio clips and WhatsApp sharing, and a children’s preview. <a href="#theo">More below</a>.
+            </p>
+          </article>
+        </div>
+      </section>
 
       <section id="theo" className={styles.section}>
         <div className={styles.wrap}>

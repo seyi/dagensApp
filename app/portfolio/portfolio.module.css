@@ -167,6 +167,93 @@
   margin-top: 12px;
 }
 
+.role {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--teal-600);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.role + .role {
+  border-left-color: var(--wine-500);
+}
+
+.roleHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.roleTitle {
+  font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--teal-900);
+}
+
+.roleOrg {
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.roleDates {
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wine-600);
+  background: var(--wine-50);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+.roleBody {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 24px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+.roleList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 18px;
+  list-style: disc;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.roleList li::marker {
+  color: var(--wine-500);
+}
+
+.role p a {
+  color: var(--teal-700);
+  font-weight: 600;
+}
+
+.roleList strong {
+  color: var(--teal-700);
+}
+
+.roleShot img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.roleShot figcaption {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -488,6 +575,12 @@
   }
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .roleHead {
+    flex-direction: column;
+  }
+  .roleBody {
+    grid-template-columns: minmax(0, 1fr);
   }
   .cards,
   .cards3 {
