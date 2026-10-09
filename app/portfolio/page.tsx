@@ -77,7 +77,7 @@ const OFFER = [
 
 const EMAIL = 'seyiakadri@gmail.com';
 // Set to the full profile URL (https://www.linkedin.com/in/...) to show the link.
-const LINKEDIN_URL = '';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/seyi-akadri/';
 
 const PAPERS = [
   {
