@@ -443,6 +443,13 @@
   font-size: 18px;
 }
 
+.paperFinding {
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
 .paperMeta {
   color: var(--muted);
   font-size: 14px;

@@ -57,7 +57,7 @@ const PLATFORMS = [
   {
     name: 'Achatina',
     tagline: 'Author governed AI agents in a spreadsheet',
-    text: 'Turns a spreadsheet into a governed AI agent: authored by non-engineers, run against any model, driving real tools over MCP and pausing for human approval, deterministic and auditable end to end.',
+    text: 'Turns a spreadsheet into a governed AI agent: authored by non-engineers, run against any model, driving real tools over MCP and pausing for human approval, with deterministic workflow execution, auditable end to end.',
     href: 'https://achatina.aiyify.com',
     host: 'achatina.aiyify.com',
   },
@@ -88,13 +88,18 @@ const LINKEDIN_URL = 'https://www.linkedin.com/in/seyi-akadri/';
 
 const PAPERS = [
   {
-    title: 'Evaluability Frontiers: Measuring Off-Policy Evaluation under Recommender Feedback Loops',
-    meta: 'Preprint · PDF',
+    title:
+      'Evaluability Frontiers: A Measurement-and-Attribution Framework for Off-Policy Evaluation under Recommender Feedback Loops',
+    finding:
+      'Separates whether a recommender is learning the user, narrowing what it shows, or changing the user’s preferences, with four instruments including an evaluability budget and a two-part overlap contract, under a preregistered design.',
+    meta: 'Seyi Akadri · Preprint, August 2026 · PDF',
     href: '/research/evaluability-frontiers.pdf',
   },
   {
     title: 'An accuracy–leniency tension in LLM-judge metrics',
-    meta: 'Preprint · PDF',
+    finding:
+      'A real LLM judge was either 61% accurate and lenient (approving 26.6% of rejected work) or 99.8% accurate and almost never lenient (0.2%). A human answered all 50 items correctly.',
+    meta: 'Seyi Akadri and Edesiri Bridget Nkemnole (University of Lagos) · Preprint, September 2026 · PDF',
     href: '/research/accuracy-leniency-llm-judges.pdf',
   },
 ];
@@ -150,7 +155,7 @@ export default function PortfolioPage() {
           <h2 className={styles.sectionTitle}>THEO · The Elevation Church</h2>
           <p className={styles.sectionLead}>
             A faith companion whose answers come from the church’s own teaching, never from guesswork, with the source shown
-            beside every answer. Live in production since 2026.
+            beside every answer. In production at theoai.elevationng.org.
           </p>
           <div className={styles.stats}>
             {STATS.map((s) => (
@@ -236,6 +241,7 @@ export default function PortfolioPage() {
               <a key={p.href} className={styles.paper} href={p.href} target="_blank" rel="noopener noreferrer">
                 <div>
                   <div className={styles.paperTitle}>{p.title}</div>
+                  <p className={styles.paperFinding}>{p.finding}</p>
                   <div className={styles.paperMeta}>{p.meta}</div>
                 </div>
                 <span className={styles.paperLink}>Read the paper ↗</span>
