@@ -48,6 +48,13 @@ const PLATFORMS = [
     host: 'dagens.aiyify.com',
   },
   {
+    name: 'Claw Lisp',
+    tagline: 'The governed agent runtime',
+    text: 'The engine under Achatina. It validates workflow intent before execution, runs agents in a sealed environment, requires human approval before anything is published, and records provenance for audit, including a machine-readable agent bill of materials. Source-available (BSL-1.1); in private development.',
+    href: 'https://achatina.aiyify.com',
+    host: 'See it in Achatina',
+  },
+  {
     name: 'Achatina',
     tagline: 'Author governed AI agents in a spreadsheet',
     text: 'Turns a spreadsheet into a governed AI agent: authored by non-engineers, run against any model, driving real tools over MCP and pausing for human approval, deterministic and auditable end to end.',
@@ -200,8 +207,11 @@ export default function PortfolioPage() {
       <section id="platforms" className={styles.section}>
         <div className={styles.wrap}>
           <h2 className={styles.sectionTitle}>Platforms</h2>
-          <p className={styles.sectionLead}>The infrastructure I build for governed, reliable AI agents.</p>
-          <div className={styles.cards}>
+          <p className={styles.sectionLead}>
+            The infrastructure I build for governed, reliable AI agents: Dagens orchestrates, Claw Lisp runs, Achatina
+            authors.
+          </p>
+          <div className={`${styles.cards} ${styles.cards3}`}>
             {PLATFORMS.map((p) => (
               <a key={p.name} className={`${styles.card} ${styles.cardLink}`} href={p.href} target="_blank" rel="noopener noreferrer">
                 <div className={styles.cardTitle}>{p.name}</div>
