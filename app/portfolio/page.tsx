@@ -82,7 +82,7 @@ const OFFER = [
   },
 ];
 
-const EMAIL = 'seyiakadri@gmail.com';
+const EMAIL = 'seyi@aiyify.com';
 // Set to the full profile URL (https://www.linkedin.com/in/...) to show the link.
 const LINKEDIN_URL = 'https://www.linkedin.com/in/seyi-akadri/';
 
@@ -248,6 +248,23 @@ export default function PortfolioPage() {
               </a>
             ))}
           </div>
+          <h3 className={styles.subTitle}>Open source</h3>
+          <a
+            className={styles.paper}
+            href="https://github.com/confident-ai/deepeval/pull/3392"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div>
+              <div className={styles.paperTitle}>DeepEval: opt-in judge provenance and replay markers</div>
+              <p className={styles.paperFinding}>
+                Archives exactly what an LLM judge was asked and answered, and marks cached results as replays, so a metric
+                tracked across weeks, model versions or rubric changes can be audited later.
+              </p>
+              <div className={styles.paperMeta}>Pull request #3392 to confident-ai/deepeval · open</div>
+            </div>
+            <span className={styles.paperLink}>View the PR ↗</span>
+          </a>
         </div>
       </section>
 
