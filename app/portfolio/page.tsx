@@ -117,8 +117,8 @@ export default function PortfolioPage() {
             I build <em>grounded AI</em> that people can trust, and research how to measure it.
           </h1>
           <p className={styles.lead}>
-            I designed and shipped THEO, The Elevation Church’s AI faith companion, from first prototype to production, as
-            a volunteer. I build the platforms underneath, Dagens and Achatina, and I write about evaluating AI systems
+            I designed and shipped THEO, The Elevation Church’s AI faith companion, from first prototype to production. I
+            build the platforms underneath, Dagens and Achatina, and I write about evaluating AI systems
             honestly: off-policy evaluation under feedback loops, and the limits of LLM-as-judge metrics.
           </p>
           <div className={styles.actions}>
